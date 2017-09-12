@@ -1,29 +1,19 @@
 package com.qg.musicmaven.ui
 
-import android.annotation.TargetApi
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
-import android.content.res.Configuration
-import android.media.RingtoneManager
-import android.net.Uri
-import android.os.Build
+import android.graphics.Color
+
 import android.os.Bundle
-import android.preference.ListPreference
-import android.preference.Preference
-import android.preference.PreferenceActivity
-import android.preference.PreferenceFragment
-import android.preference.PreferenceManager
-import android.preference.RingtonePreference
-import android.text.TextUtils
-import android.view.Gravity
 import android.view.MenuItem
+
+import com.qg.musicmaven.App
 import com.qg.musicmaven.R
-import com.qmuiteam.qmui.util.QMUIStatusBarHelper
+import com.qg.musicmaven.utils.FilePicker
 import com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView
 import com.qmuiteam.qmui.widget.grouplist.QMUIGroupListView
 import kotlinx.android.synthetic.main.activity_setting.*
 import org.jetbrains.anko.sdk25.coroutines.onCheckedChange
+import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.textColor
 
 
 class SettingsActivity : BaseActivity() {
@@ -34,15 +24,48 @@ class SettingsActivity : BaseActivity() {
         initView()
     }
 
-    fun initView() {
-        setActionBar(toolbar)
-        actionBar.setDisplayHomeAsUpEnabled(true)
-        initgroupListView()
+    private fun initView() {
+        topBar.setTitle("设置").textColor = Color.WHITE
+        topBar.addLeftBackImageButton().onClick { finish() }
+        initSettingList()
     }
 
-    fun initgroupListView() {
-
-
+    private fun initSettingList() {
+        val nightMode = settingList.createItemView("开启夜间模式")
+        nightMode.setDetailText("已关闭")
+        nightMode.accessoryType = QMUICommonListItemView.ACCESSORY_TYPE_SWITCH
+        nightMode.switch.onCheckedChange { _, isChecked ->
+            if (isChecked) {
+                nightMode.setDetailText("已开启")
+            } else {
+                nightMode.setDetailText("已关闭")
+            }
+        }
+        val saveMode = settingList.createItemView("开启省流量模式")
+        saveMode.setDetailText("已关闭")
+        saveMode.accessoryType = QMUICommonListItemView.ACCESSORY_TYPE_SWITCH
+        saveMode.switch.onCheckedChange { _, isChecked ->
+            if (isChecked) {
+                saveMode.setDetailText("已开启")
+            } else {
+                saveMode.setDetailText("已关闭")
+            }
+        }
+        val downloadPath = settingList.createItemView("设置储存位置")
+        downloadPath.orientation = QMUICommonListItemView.VERTICAL
+        downloadPath.setDetailText(App.DOWNLOAD_PATH)
+        downloadPath.accessoryType = QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON
+        QMUIGroupListView.newSection(this).setTitle("通用设置")
+                .addItemView(nightMode, {})
+                .addItemView(saveMode, {})
+                .addTo(settingList)
+        QMUIGroupListView.newSection(this).setTitle("下载相关")
+                .addItemView(downloadPath, {
+                    FilePicker(this, fragmentManager)
+                            .onFinish { downloadPath.setDetailText(App.DOWNLOAD_PATH) }
+                            .show()
+                })
+                .addTo(settingList)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

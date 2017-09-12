@@ -5,17 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/appBackGround">
-    <Toolbar
-        android:id="@+id/toolbar"
+
+    <com.qmuiteam.qmui.widget.QMUITopBar
+        android:id="@+id/topBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/toolBar"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme"
-        android:title="设 置"
-        android:titleTextColor="@color/qmui_config_color_white"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="60dp"
+        app:qmui_topbar_bg_color="@color/toolBar" />
+
+    <com.qmuiteam.qmui.widget.grouplist.QMUIGroupListView
+        android:id="@+id/settingList"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/topBar"
+        />
+
 
 </android.support.constraint.ConstraintLayout>

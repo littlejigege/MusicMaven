@@ -1,9 +1,6 @@
 package com.qg.musicmaven.netWork
 
-import com.qg.musicmaven.modle.Audio
-import com.qg.musicmaven.modle.AudioInfo
-import com.qg.musicmaven.modle.AudioInfoContainer
-import com.qg.musicmaven.modle.FeedBack
+import com.qg.musicmaven.modle.*
 import io.reactivex.Observable
 import okhttp3.ResponseBody
 import retrofit2.http.*
@@ -20,6 +17,10 @@ interface KuGouApi {
     //根据hash得到audio相关下载地址
     @GET("http://www.kugou.com/yy/index.php?r=play/getdata")
     fun getAudio(@Query("hash") hash: String): Observable<FeedBack<Audio>>
+
+    //获得建议
+    @GET("http://searchtip.kugou.com/getSearchTip?MusicTipCount=5&MVTipCount=2&albumcount=2")
+    fun getSuggestion(@Query("keyword") keyWord: String): Observable<FeedBack<MutableList<SuggestionContainer>>>
 
     //文件下载
     @GET

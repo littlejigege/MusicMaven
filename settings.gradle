@@ -1,1 +1,1 @@
-include ':app',':storagechooser', ':myflux'
+include ':app',':storagechooser'

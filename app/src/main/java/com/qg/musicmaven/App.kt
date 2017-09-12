@@ -6,6 +6,7 @@ import com.github.pwittchen.reactivenetwork.library.rx2.internet.observing.strat
 import java.io.File
 import kotlin.properties.Delegates
 import com.jimji.preference.Preference
+import com.qg.musicmaven.netWork.KuGouApi
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import utils.showToast
@@ -21,6 +22,7 @@ class App : Application() {
     companion object {
         var instance: App by Delegates.notNull()
         var retrofit: Retrofit by Delegates.notNull()
+        val kugouApi by lazy { App.retrofit.create(KuGouApi::class.java) }
         var DOWNLOAD_PATH: String
             set(value) {
                 Preference.save("PATH") { "PATH" - value }
@@ -38,16 +40,16 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        //init my utils
         Preference.init(this)
+        //ObserveNetWork
         startObserveNetWork()
-        retrofit = Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .baseUrl("http://songsearch.kugou.com/")
-                .build()
+        //build network core
+        buildRetrofit()
+
     }
 
-    fun startObserveNetWork() {
+    private fun startObserveNetWork() {
         ReactiveNetwork.observeInternetConnectivity(SocketInternetObservingStrategy(), "www.baidu.com")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -58,5 +60,13 @@ class App : Application() {
 
                     }
                 }
+    }
+
+    private fun buildRetrofit() {
+        retrofit = Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .baseUrl("http://songsearch.kugou.com/")
+                .build()
     }
 }

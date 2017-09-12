@@ -7,7 +7,7 @@ import org.greenrobot.eventbus.EventBus
 /**
 * Created by jimji on 2017/9/8.
 */
-abstract class Store {
+abstract class Store: Observable() {
     abstract val TAG: String
     private val bus = EventBus.builder().build()
 

@@ -13,6 +13,11 @@ class FilePicker(var act: Activity, var fragM: FragmentManager) {
     private val mBuilder = StorageChooser.Builder()
     lateinit var mChooser: StorageChooser
     private val c = Content()
+    private var _onFinish: () -> Unit = {}
+    fun onFinish(f: () -> Unit): FilePicker {
+        _onFinish = f
+        return this
+    }
 
     init {
         setup()
@@ -41,7 +46,10 @@ class FilePicker(var act: Activity, var fragM: FragmentManager) {
                 .build()
     }
 
-    private fun setAction() = mChooser.setOnSelectListener { App.DOWNLOAD_PATH = it }
+    private fun setAction() = mChooser.setOnSelectListener {
+        App.DOWNLOAD_PATH = it
+        _onFinish()
+    }
 
     fun show() = mChooser.show()
 

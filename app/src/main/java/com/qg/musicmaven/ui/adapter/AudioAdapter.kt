@@ -18,6 +18,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.internal.schedulers.IoScheduler
 import kotlinx.android.synthetic.main.audio_item.view.*
 import org.jetbrains.anko.find
+import org.jetbrains.anko.sdk25.coroutines.onClick
 
 /**
  * Created by jimji on 2017/9/9.
@@ -25,39 +26,56 @@ import org.jetbrains.anko.find
 class AudioAdapter(var data: MutableList<AudioInfo>, var ctx: Context) : RecyclerView.Adapter<AudioAdapter.ViewHolder>() {
 
     override fun getItemCount(): Int = data.size
+    private var _onItemClick: (AudioInfo) -> Unit = {}
 
+    fun onItemClick(o: (AudioInfo) -> Unit) {
+        _onItemClick = o
+    }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val audioInfo = data[position]
-        with(audioInfo) {
-            holder.itemView.audioName.text = songName.replace("<em>", "").replace("</em>", "")
-            holder.itemView.singerName.text = singerName
-            App.retrofit.create(KuGouApi::class.java).getAudio(fileHash)
-                    .subscribeOn(IoScheduler())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(object : Observer<FeedBack<Audio>?> {
-                        override fun onComplete() {
-                        }
+        if (audioInfo.imgUrl != null) {
+            Glide.with(ctx)
+                    .load(audioInfo.imgUrl)
+                    .skipMemoryCache(false)
+                    .into(holder.itemView.imageView)
+        } else {
+            with(audioInfo) {
+                holder.itemView.audioName.text = songName.replace("<em>", "").replace("</em>", "")
+                holder.itemView.singerName.text = singerName
+                App.retrofit.create(KuGouApi::class.java).getAudio(fileHash)
+                        .subscribeOn(IoScheduler())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(object : Observer<FeedBack<Audio>?> {
+                            override fun onComplete() {
+                            }
 
-                        override fun onSubscribe(d: Disposable) {
+                            override fun onSubscribe(d: Disposable) {
+                                holder.dispose = d
+                            }
 
-                        }
+                            override fun onNext(t: FeedBack<Audio>) {
+                                audioInfo.imgUrl = t.data.imgUrl
+                                Glide.with(ctx)
+                                        .load(t.data.imgUrl)
+                                        .skipMemoryCache(false)
+                                        .into(holder.itemView.imageView)
+                            }
 
-                        override fun onNext(t: FeedBack<Audio>) {
-                            Glide.with(ctx)
-                                    .load(t.data.imgUrl)
-                                    .placeholder(R.drawable.ic_music)
-                                    .into(holder.itemView.imageView)
-                        }
-
-                        override fun onError(e: Throwable) {
-                            e.printStackTrace()
-                        }
-                    })
+                            override fun onError(e: Throwable) {
+                                e.printStackTrace()
+                            }
+                        })
+            }
         }
+
     }
 
-    override fun onViewRecycled(holder: ViewHolder?) {
+    override fun onViewRecycled(holder: ViewHolder) {
+        if (holder.dispose != null) {
+            holder.dispose!!.dispose()
+            holder.dispose = null
+        }
         super.onViewRecycled(holder)
     }
 
@@ -66,5 +84,11 @@ class AudioAdapter(var data: MutableList<AudioInfo>, var ctx: Context) : Recycle
         return ViewHolder(itemView)
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var dispose: Disposable? = null
+
+        init {
+            itemView.onClick { _onItemClick(data[adapterPosition]) }
+        }
+    }
 }

@@ -1,6 +1,5 @@
 package com.qg.musicmaven.ui
 
-import android.content.res.TypedArray
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
@@ -8,28 +7,41 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.textservice.SuggestionsInfo
 import android.widget.TextView
+import com.jimji.preference.Preference
 import com.miguelcatalan.materialsearchview.MaterialSearchView
+import com.qg.musicmaven.App
 import com.qg.musicmaven.R
+import com.qg.musicmaven.download.DownloadCallback
 import com.qg.musicmaven.modle.AudioInfo
+import com.qg.musicmaven.modle.FeedBack
+import com.qg.musicmaven.modle.ServerAudio
 import com.qg.musicmaven.modle.SuggestionContainer
 import com.qg.musicmaven.netWork.Action
 import com.qg.musicmaven.netWork.ActionError
+import com.qg.musicmaven.netWork.DownLoadActionCreator
 import com.qg.musicmaven.netWork.SearchAcitonCreator
 import com.qg.musicmaven.ui.adapter.AudioAdapter
+import com.qg.musicmaven.ui.adapter.ServerAudioAdapter
 import com.qmuiteam.qmui.widget.dialog.QMUIBottomSheet
+import io.reactivex.Observer
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.internal.schedulers.IoScheduler
+
 
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.downloadManager
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startActivity
 import utils.showToast
 
-
 class MainActivity : BaseActivity(), MaterialSearchView.OnQueryTextListener, com.qg.musicmaven.netWork.Observer {
+
     lateinit var adapter: AudioAdapter
     var keyWord = ""
     private val actionCreator = SearchAcitonCreator()
+    private val downloadCreator = DownLoadActionCreator(this)
     override fun onQueryTextSubmit(query: String): Boolean {
         keyWord = query
         emptyView.show(true)
@@ -51,7 +63,6 @@ class MainActivity : BaseActivity(), MaterialSearchView.OnQueryTextListener, com
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         actionCreator.register(this)
-        //FilePicker(this, fragmentManager).show()
         initView()
     }
 
@@ -63,18 +74,17 @@ class MainActivity : BaseActivity(), MaterialSearchView.OnQueryTextListener, com
         adapter = AudioAdapter(mutableListOf(), this)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
-        adapter.onItemClick { showBottomSheet() }
+        adapter.onItemClick {
+            permissionMan.doAfterGet(permissionMan.STORAGE) {
+                showBottomSheet(it)
+            }
+        }
         scrim.onClick {
             if (searchView.isSearchOpen) {
                 searchView.closeSearch()
                 scrim.visibility = View.GONE
             }
         }
-    }
-
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>?, grantResults: IntArray?) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -100,6 +110,36 @@ class MainActivity : BaseActivity(), MaterialSearchView.OnQueryTextListener, com
             }
             R.id.action_setting -> {
                 startActivity<SettingsActivity>()
+            }
+            R.id.action_cloud -> {
+                val id = Preference.get("user", "id" to -1L) as Long
+                if (id == -1L) {
+                    startActivity<StartActivity>()
+                } else {
+                    emptyView.show(true)
+                    App.serverApi.getsonglist(id)
+                            .subscribeOn(IoScheduler())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(object : Observer<FeedBack<MutableList<ServerAudio>>?> {
+                                override fun onComplete() {
+
+                                }
+
+                                override fun onNext(t: FeedBack<MutableList<ServerAudio>>) {
+                                    emptyView.hide()
+                                    recyclerView.adapter = ServerAudioAdapter(t.data, this@MainActivity)
+                                }
+
+                                override fun onSubscribe(d: Disposable) {
+
+                                }
+
+                                override fun onError(e: Throwable) {
+                                    emptyView.show("抱歉，有点问题", "再试一次吧")
+                                }
+                            })
+                }
+
             }
         }
         return super.onOptionsItemSelected(item)
@@ -134,7 +174,7 @@ class MainActivity : BaseActivity(), MaterialSearchView.OnQueryTextListener, com
         super.onStop()
     }
 
-    private fun showBottomSheet() {
+    private fun showBottomSheet(item: AudioInfo) {
         QMUIBottomSheet.BottomListSheetBuilder(this)
                 .addItem(R.drawable.ic_stander, "标准音质", "")
                 .addItem(R.drawable.ic_hq, "高品音质", "")
@@ -143,15 +183,62 @@ class MainActivity : BaseActivity(), MaterialSearchView.OnQueryTextListener, com
                     when (pos) {
                         0 -> {
                             showToast("开始下载标准音质")
+                            downloadCreator.download(item, false, object : DownloadCallback {
+                                override fun onPaused() {
+                                    Log.d("asd", "onPaused")
+                                }
+
+                                override fun onPending() {
+                                    Log.d("asd", "onPending")
+                                }
+
+                                override fun onRunning() {
+                                    Log.d("asd", "onRunning")
+                                }
+
+                                override fun onSuccessful() {
+                                    Log.d("asd", "onSuccessful")
+                                }
+
+                                override fun onFailed() {
+                                    Log.d("asd", "onFailed")
+                                }
+                            })
                         }
                         1 -> {
                             showToast("开始下载高品音质")
+                            downloadCreator.download(item, true, object : DownloadCallback {
+                                override fun onPaused() {
+                                    Log.d("asd", "onPaused")
+                                }
+
+                                override fun onPending() {
+                                    Log.d("asd", "onPending")
+                                }
+
+                                override fun onRunning() {
+                                    Log.d("asd", "onRunning")
+                                }
+
+                                override fun onSuccessful() {
+                                    Log.d("asd", "onSuccessful")
+                                }
+
+                                override fun onFailed() {
+                                    Log.d("asd", "onFailed")
+                                }
+                            })
                         }
                     }
                 }
                 .setTitle("下载")
                 .build()
                 .show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        //downloadCreator.checkApk()
     }
 
     override fun onChange(atc: Action) {
@@ -167,7 +254,7 @@ class MainActivity : BaseActivity(), MaterialSearchView.OnQueryTextListener, com
                 val list = atc.data as MutableList<SuggestionContainer>
                 val array = mutableListOf<String>()
                 list.map { it.suggestions.map { array.add(it.info) } }
-                array.toTypedArray().map { Log.d("asd",it) }
+                array.toTypedArray().map { Log.d("asd", it) }
                 searchView.setSuggestions(array.toTypedArray())
             }
         }
@@ -186,7 +273,7 @@ class MainActivity : BaseActivity(), MaterialSearchView.OnQueryTextListener, com
                 (e.data as Throwable).printStackTrace()
             }
         }
-
     }
+
 
 }

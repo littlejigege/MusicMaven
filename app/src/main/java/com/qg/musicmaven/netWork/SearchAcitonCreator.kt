@@ -50,6 +50,7 @@ class SearchAcitonCreator : ActionCreator() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : Observer<FeedBack<MutableList<SuggestionContainer>>?> {
                     override fun onError(e: Throwable) {
+                        e.printStackTrace()
                         postErr(ActionError("suggestionErr", e))
                     }
 

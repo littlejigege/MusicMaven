@@ -1,14 +1,21 @@
 package com.qg.musicmaven
 
 import android.app.Application
+import com.blankj.utilcode.util.Utils
+import com.facebook.stetho.Stetho
+import com.facebook.stetho.okhttp3.StethoInterceptor
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.github.pwittchen.reactivenetwork.library.rx2.internet.observing.strategy.SocketInternetObservingStrategy
 import java.io.File
 import kotlin.properties.Delegates
 import com.jimji.preference.Preference
+import com.liulishuo.filedownloader.FileDownloader
+import com.qg.musicmaven.download.DownloadUtil
 import com.qg.musicmaven.netWork.KuGouApi
+import com.qg.musicmaven.netWork.ServerApi
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import okhttp3.OkHttpClient
 import utils.showToast
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -23,6 +30,7 @@ class App : Application() {
         var instance: App by Delegates.notNull()
         var retrofit: Retrofit by Delegates.notNull()
         val kugouApi by lazy { App.retrofit.create(KuGouApi::class.java) }
+        val serverApi by lazy { App.retrofit.create(ServerApi::class.java) }
         var DOWNLOAD_PATH: String
             set(value) {
                 Preference.save("PATH") { "PATH" - value }
@@ -46,6 +54,10 @@ class App : Application() {
         startObserveNetWork()
         //build network core
         buildRetrofit()
+        FileDownloader.setupOnApplicationOnCreate(this)
+        DownloadUtil.init(this)
+        Utils.init(this)
+        Stetho.initializeWithDefaults(this)
 
     }
 
@@ -63,7 +75,10 @@ class App : Application() {
     }
 
     private fun buildRetrofit() {
+        val client = OkHttpClient.Builder().addNetworkInterceptor(StethoInterceptor()).build()
+
         retrofit = Retrofit.Builder()
+                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .baseUrl("http://songsearch.kugou.com/")

@@ -13,15 +13,7 @@ data class AudioInfoContainer(@SerializedName("lists") var list: MutableList<Aud
 
 data class AudioInfo(@SerializedName("SongName") var songName: String, @SerializedName("SingerName") var singerName: String,
                      @SerializedName("FileHash") var fileHash: String, @SerializedName("HQFileHash") var hqFileHash: String, var imgUrl: String?) {
-    fun hasHq(): Boolean {
-        //TODO
-        return true
-    }
 
-    fun canDownload(): Boolean {
-        //TODO
-        return true
-    }
 }
 
 data class Audio(@SerializedName("audio_name") var audioName: String, @SerializedName("img") var imgUrl: String,

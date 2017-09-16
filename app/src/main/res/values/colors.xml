@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#2fa881</color>
     <color name="toolBar">#1490f7</color>
     <color name="statusBar">#0f71d6</color>
     <color name="appBackGround">#eceeef</color>
@@ -15,7 +15,7 @@
     <color name="app_color_blue_2_pressed">#7F31BDF3</color>
 
     <color name="app_color_theme_1">#EF5362</color> <!-- Grapefruit -->
-    <color name="app_color_theme_2">#FE6D4B</color> <!-- Bittersweet -->
+    <color name="app_color_theme_2">#fe6d4b</color> <!-- Bittersweet -->
     <color name="app_color_theme_3">#FFCF47</color> <!-- Sunflower -->
     <color name="app_color_theme_4">#9FD661</color> <!-- Grass -->
     <color name="app_color_theme_5">#3FD0AD</color> <!-- Mint -->

@@ -8,6 +8,7 @@ import android.view.MenuItem
 import com.qg.musicmaven.App
 import com.qg.musicmaven.R
 import com.qg.musicmaven.utils.FilePicker
+import com.qmuiteam.qmui.util.QMUIStatusBarHelper
 import com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView
 import com.qmuiteam.qmui.widget.grouplist.QMUIGroupListView
 import kotlinx.android.synthetic.main.activity_setting.*
@@ -61,9 +62,11 @@ class SettingsActivity : BaseActivity() {
                 .addTo(settingList)
         QMUIGroupListView.newSection(this).setTitle("下载相关")
                 .addItemView(downloadPath, {
-                    FilePicker(this, fragmentManager)
-                            .onFinish { downloadPath.setDetailText(App.DOWNLOAD_PATH) }
-                            .show()
+                    permissionMan.doAfterGet(permissionMan.STORAGE) {
+                        FilePicker(this, fragmentManager)
+                                .onFinish { downloadPath.setDetailText(App.DOWNLOAD_PATH) }
+                                .show()
+                    }
                 })
                 .addTo(settingList)
     }

@@ -15,6 +15,7 @@ import com.qg.musicmaven.R
 import com.qg.musicmaven.modle.Audio
 import com.qg.musicmaven.modle.AudioInfo
 import com.qg.musicmaven.modle.FeedBack
+import com.qg.musicmaven.modle.ServerAudio
 import com.qg.musicmaven.netWork.KuGouApi
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -27,56 +28,25 @@ import org.jetbrains.anko.sdk25.coroutines.onClick
 /**
  * Created by jimji on 2017/9/9.
  */
-class AudioAdapter(var data: MutableList<AudioInfo>, var ctx: Context) : RecyclerView.Adapter<AudioAdapter.ViewHolder>() {
+class ServerAudioAdapter(var data: MutableList<ServerAudio>, var ctx: Context) : RecyclerView.Adapter<ServerAudioAdapter.ViewHolder>() {
 
     override fun getItemCount(): Int = data.size
-    private var _onItemClick: (AudioInfo) -> Unit = {}
+    private var _onItemClick: (ServerAudio) -> Unit = {}
 
-    fun onItemClick(o: (AudioInfo) -> Unit) {
+    fun onItemClick(o: (ServerAudio) -> Unit) {
         _onItemClick = o
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val audioInfo = data[position]
-
         with(audioInfo) {
             holder.itemView.audioName.text = songName.replace("<em>", "").replace("</em>", "")
-            holder.itemView.singerName.text = singerName
-            if (audioInfo.imgUrl != null) {
-                loadImg(audioInfo.imgUrl!!, holder.itemView.imageView)
-            } else {
-                App.retrofit.create(KuGouApi::class.java).getAudio(fileHash)
-                        .subscribeOn(IoScheduler())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(object : Observer<FeedBack<Audio>?> {
-                            override fun onComplete() {
-                            }
-
-                            override fun onSubscribe(d: Disposable) {
-                                holder.dispose = d
-                            }
-
-                            override fun onNext(t: FeedBack<Audio>) {
-                                audioInfo.imgUrl = t.data.imgUrl
-                                loadImg(t.data.imgUrl, holder.itemView.imageView)
-                            }
-
-                            override fun onError(e: Throwable) {
-                                e.printStackTrace()
-                            }
-                        })
-            }
+            holder.itemView.singerName.text = singer
+            loadImg(audioInfo.imgUrl!!, holder.itemView.imageView)
         }
 
     }
 
-    override fun onViewRecycled(holder: ViewHolder) {
-        if (holder.dispose != null) {
-            holder.dispose!!.dispose()
-            holder.dispose = null
-        }
-        super.onViewRecycled(holder)
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.audio_item, parent, false)
@@ -92,8 +62,6 @@ class AudioAdapter(var data: MutableList<AudioInfo>, var ctx: Context) : Recycle
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var dispose: Disposable? = null
-
         init {
             itemView.onClick { _onItemClick(data[adapterPosition]) }
         }

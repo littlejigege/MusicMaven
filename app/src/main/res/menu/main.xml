@@ -4,12 +4,18 @@
     <item
         android:id="@+id/action_search"
         android:icon="@drawable/ic_action_action_search"
-        android:title="Search"
-        android:showAsAction="always" />
+        android:showAsAction="always"
+        android:title="Search" />
+    <item
+        android:id="@+id/action_cloud"
+        android:icon="@drawable/ic_cloud_white_24dp"
+        android:showAsAction="always"
+        android:title="Cloud" />
     <item
         android:id="@+id/action_setting"
         android:icon="@drawable/ic_settings_white_24dp"
-        android:title="Setting"
-        android:showAsAction="always" />
+        android:showAsAction="always"
+        android:title="Setting" />
+
 
 </menu>

@@ -21,8 +21,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.internal.schedulers.IoScheduler
 import kotlinx.android.synthetic.main.audio_item.view.*
-import org.jetbrains.anko.find
-import org.jetbrains.anko.sdk25.coroutines.onClick
+
 
 /**
  * Created by jimji on 2017/9/9.
@@ -41,14 +40,14 @@ class AudioAdapter(var data: MutableList<AudioInfo>, var ctx: Context) : Recycle
 
         with(audioInfo) {
             holder.itemView.audioName.text = songName.replace("<em>", "").replace("</em>", "")
-            holder.itemView.singerName.text = singerName
+            holder.itemView.singerName.text = singerName.replace("<em>", "").replace("</em>", "")
             if (audioInfo.imgUrl != null) {
                 loadImg(audioInfo.imgUrl!!, holder.itemView.imageView)
             } else {
-                App.retrofit.create(KuGouApi::class.java).getAudio(fileHash)
+                App.kugouApi.getAudio(fileHash, albumId)
                         .subscribeOn(IoScheduler())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(object : Observer<FeedBack<Audio>?> {
+                        .subscribe(object : Observer<FeedBack<Audio>> {
                             override fun onComplete() {
                             }
 
@@ -95,7 +94,7 @@ class AudioAdapter(var data: MutableList<AudioInfo>, var ctx: Context) : Recycle
         var dispose: Disposable? = null
 
         init {
-            itemView.onClick { _onItemClick(data[adapterPosition]) }
+            itemView.setOnClickListener { _onItemClick(data[adapterPosition]) }
         }
     }
 }

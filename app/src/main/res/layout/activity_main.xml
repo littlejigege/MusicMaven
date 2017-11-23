@@ -8,6 +8,18 @@
     tools:context="com.qg.musicmaven.ui.MainActivity">
 
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/stopButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:layout_marginEnd="24dp"
+        android:clickable="true"
+        android:src="@drawable/ic_stop_white_48dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <Toolbar
         android:id="@+id/toolbar"
         style="@style/HomeToolbar"
@@ -23,8 +35,8 @@
 
     <com.miguelcatalan.materialsearchview.MaterialSearchView
         android:id="@+id/searchView"
-        android:layout_width="wrap_content"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:elevation="11dp" />
 
     <android.support.v7.widget.RecyclerView
@@ -38,13 +50,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
-    <View
-        android:id="@+id/scrim"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#99323232"
-        android:elevation="8dp"
-        android:visibility="gone" />
+    <!--<View-->
+        <!--android:id="@+id/scrim"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:background="#99323232"-->
+        <!--android:elevation="8dp"-->
+        <!--android:visibility="gone" />-->
 
     <com.qmuiteam.qmui.widget.QMUIEmptyView
         android:id="@+id/emptyView"

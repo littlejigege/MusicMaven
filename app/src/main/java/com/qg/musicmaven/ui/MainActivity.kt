@@ -8,15 +8,10 @@ import android.view.MenuItem
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.TextView
-import com.jimji.preference.Preference
 import com.miguelcatalan.materialsearchview.MaterialSearchView
 import com.qg.musicmaven.App
 import com.qg.musicmaven.R
 import com.qg.musicmaven.download.DownloadCallback
-import com.qg.musicmaven.modle.AudioInfo
-import com.qg.musicmaven.modle.FeedBack
-import com.qg.musicmaven.modle.ServerAudio
-import com.qg.musicmaven.modle.SuggestionContainer
 import com.qg.musicmaven.netWork.Action
 import com.qg.musicmaven.netWork.ActionError
 import com.qg.musicmaven.netWork.DownLoadActionCreator
@@ -28,17 +23,20 @@ import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.internal.schedulers.IoScheduler
+import com.mobile.utils.*
+import com.mobile.utils.permission.Permission
+import com.qg.musicmaven.modle.*
 
 
 import kotlinx.android.synthetic.main.activity_main.*
-import org.jetbrains.anko.downloadManager
+import kotlinx.coroutines.experimental.delay
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startActivity
-import utils.showToast
+import java.io.File
 
 class MainActivity : BaseActivity(), MaterialSearchView.OnQueryTextListener, com.qg.musicmaven.netWork.Observer {
 
-    lateinit var adapter: AudioAdapter
     var keyWord = ""
     private val actionCreator = SearchAcitonCreator()
     private val downloadCreator = DownLoadActionCreator(this)
@@ -62,8 +60,11 @@ class MainActivity : BaseActivity(), MaterialSearchView.OnQueryTextListener, com
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        actionCreator.register(this)
         initView()
+        doAsync {
+            Thread.sleep(3000)
+            downloadCreator.checkApk()
+        }
     }
 
 
@@ -71,20 +72,14 @@ class MainActivity : BaseActivity(), MaterialSearchView.OnQueryTextListener, com
         setActionBar(toolbar)
         emptyView.show("什么都没有，快去搜索吧", "输入歌名或者歌手名进行搜素")
         animateToolbar()
-        adapter = AudioAdapter(mutableListOf(), this)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = adapter
-        adapter.onItemClick {
-            permissionMan.doAfterGet(permissionMan.STORAGE) {
-                showBottomSheet(it)
-            }
-        }
-        scrim.onClick {
-            if (searchView.isSearchOpen) {
-                searchView.closeSearch()
-                scrim.visibility = View.GONE
-            }
-        }
+        recyclerView.adapter = AudioAdapter(mutableListOf(), this)
+//        scrim.onClick {
+//            if (searchView.isSearchOpen) {
+//                searchView.closeSearch()
+//                scrim.visibility = View.GONE
+//            }
+//        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -93,11 +88,11 @@ class MainActivity : BaseActivity(), MaterialSearchView.OnQueryTextListener, com
         searchView.setOnQueryTextListener(this)
         searchView.setOnSearchViewListener(object : MaterialSearchView.SearchViewListener {
             override fun onSearchViewClosed() {
-                scrim.visibility = View.GONE
+                //scrim.visibility = View.GONE
             }
 
             override fun onSearchViewShown() {
-                scrim.visibility = View.VISIBLE
+                //scrim.visibility = View.VISIBLE
             }
         })
         return true
@@ -105,44 +100,55 @@ class MainActivity : BaseActivity(), MaterialSearchView.OnQueryTextListener, com
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.action_search -> {
+            R.id.action_setting -> startActivity<SettingsActivity>()
+            R.id.action_cloud -> setUpCloudList()
 
-            }
-            R.id.action_setting -> {
-                startActivity<SettingsActivity>()
-            }
-            R.id.action_cloud -> {
-                val id = Preference.get("user", "id" to -1L) as Long
-                if (id == -1L) {
-                    startActivity<StartActivity>()
-                } else {
-                    emptyView.show(true)
-                    App.serverApi.getsonglist(id)
-                            .subscribeOn(IoScheduler())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(object : Observer<FeedBack<MutableList<ServerAudio>>?> {
-                                override fun onComplete() {
-
-                                }
-
-                                override fun onNext(t: FeedBack<MutableList<ServerAudio>>) {
-                                    emptyView.hide()
-                                    recyclerView.adapter = ServerAudioAdapter(t.data, this@MainActivity)
-                                }
-
-                                override fun onSubscribe(d: Disposable) {
-
-                                }
-
-                                override fun onError(e: Throwable) {
-                                    emptyView.show("抱歉，有点问题", "再试一次吧")
-                                }
-                            })
-                }
-
-            }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun setUpCloudList() {
+        val id = Preference.get("user", "userId" to -1L) as Long
+        //未登录
+        if (id == -1L) {
+            startActivity<StartActivity>()
+        } else {
+
+            emptyView.show(true)
+            App.serverApi.getsonglist(id)
+                    .subscribeOn(IoScheduler())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(object : Observer<FeedBack<MutableList<ServerAudio>>> {
+                        override fun onComplete() {
+
+                        }
+
+                        override fun onNext(t: FeedBack<MutableList<ServerAudio>>) {
+                            emptyView.hide()
+                            //空则提示
+                            if (t.data.isEmpty()) {
+                                emptyView.show("什么都没有哦", "赶紧去下载几首付费歌吧")
+                                return
+                            }
+
+                            recyclerView.adapter = ServerAudioAdapter(t.data, this@MainActivity)
+                            (recyclerView.adapter as ServerAudioAdapter).onItemClick { it ->
+
+                                Permission.STORAGE.doAfterGet(this@MainActivity) {
+                                    inUiThread { showBottomSheet(it) }
+                                }
+                            }
+                        }
+
+                        override fun onSubscribe(d: Disposable) {
+
+                        }
+
+                        override fun onError(e: Throwable) {
+                            emptyView.show("抱歉，有点问题", "再试一次吧")
+                        }
+                    })
+        }
     }
 
     private fun animateToolbar() {
@@ -163,7 +169,7 @@ class MainActivity : BaseActivity(), MaterialSearchView.OnQueryTextListener, com
     override fun onBackPressed() {
         if (searchView.isSearchOpen) {
             searchView.closeSearch()
-            scrim.visibility = View.GONE
+            //scrim.visibility = View.GONE
         } else {
             super.onBackPressed()
         }
@@ -178,6 +184,7 @@ class MainActivity : BaseActivity(), MaterialSearchView.OnQueryTextListener, com
         QMUIBottomSheet.BottomListSheetBuilder(this)
                 .addItem(R.drawable.ic_stander, "标准音质", "")
                 .addItem(R.drawable.ic_hq, "高品音质", "")
+                .addItem(R.drawable.ic_play_circle_outline_cyan_600_24dp, "直接播放", "")
                 .setOnSheetItemClickListener { dialog, _, pos, _ ->
                     dialog.dismiss()
                     when (pos) {
@@ -229,33 +236,159 @@ class MainActivity : BaseActivity(), MaterialSearchView.OnQueryTextListener, com
                                 }
                             })
                         }
+                        2 -> {
+                            App.kugouApi.getAudio(item.fileHash, item.albumId)
+                                    .subscribeOn(IoScheduler())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(object : Observer<FeedBack<Audio>> {
+                                        override fun onError(e: Throwable) {
+                                            showToast("无法播放")
+                                        }
+
+                                        override fun onNext(t: FeedBack<Audio>) {
+                                            if (!t.data.playUrl.isEmpty()) {
+                                                doAsync {
+                                                    App.player.reset()
+                                                    App.player.setDataSource(t.data.playUrl)
+                                                    App.player.prepare()
+                                                    App.player.start()
+                                                    App.player.setOnCompletionListener {
+                                                        inUiThread {
+                                                            try {
+                                                                stopButton.gone()
+                                                            } catch (e: Exception) {
+
+                                                            }
+                                                        }
+                                                    }
+                                                    inUiThread { setUpStopButton() }
+                                                }
+
+
+                                            } else showToast("无法播放")
+                                        }
+
+                                        override fun onSubscribe(d: Disposable) {
+
+                                        }
+
+                                        override fun onComplete() {
+
+                                        }
+                                    })
+                        }
                     }
                 }
-                .setTitle("下载")
+                .setTitle("what do you wanna do with it")
                 .build()
                 .show()
     }
 
+    private fun showBottomSheet(item: ServerAudio) {
+        QMUIBottomSheet.BottomListSheetBuilder(this)
+                .addItem(R.drawable.ic_stander, "标准音质", "")
+                .addItem(R.drawable.ic_hq, "高品音质", "")
+                .addItem(R.drawable.ic_play_circle_outline_cyan_600_24dp, "直接播放", "")
+                .setOnSheetItemClickListener { dialog, _, pos, _ ->
+                    dialog.dismiss()
+                    when (pos) {
+                        0 -> {
+                            showToast("开始下载标准音质")
+                            if (File("${App.DOWNLOAD_PATH}/${item.singerName}-${item.songName}.mp3").exists()) {
+                                showToast("文件已存在")
+                                return@setOnSheetItemClickListener
+                            }
+                            systemDownload(item.playUrl, File("${App.DOWNLOAD_PATH}/${item.singerName}-${item.songName}.mp3"))
+                        }
+                        1 -> {
+                            showToast("开始下载高品音质")
+                            if (File("${App.DOWNLOAD_PATH}/${item.singerName}-${item.songName}.mp3").exists()) {
+                                showToast("文件已存在")
+                                return@setOnSheetItemClickListener
+                            }
+                            systemDownload(item.playUrl, File("${App.DOWNLOAD_PATH}/${item.singerName}-${item.songName}.mp3"))
+                        }
+                        2 -> {
+                            doAsync {
+                                App.player.reset()
+                                App.player.setDataSource(item.playUrl)
+                                App.player.prepare()
+                                App.player.start()
+                                App.player.setOnCompletionListener {
+                                    inUiThread {
+                                        try {
+                                            stopButton.gone()
+                                        } catch (e: Exception) {
+
+                                        }
+                                    }
+                                }
+                                inUiThread { setUpStopButton() }
+                            }
+                        }
+                    }
+                }
+                .setTitle("what do you wanna do with it")
+                .build()
+                .show()
+    }
+
+    private fun setUpStopButton() {
+        stopButton.visiable()
+        stopButton.scaleX = 0f
+        stopButton.scaleY = 0f
+        stopButton.animate()
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(200)
+                .setInterpolator(AccelerateDecelerateInterpolator())
+                .afterDone { }
+                .start()
+        stopButton.onClick {
+            App.player.stop()
+            stopButton.animate()
+                    .scaleX(0f)
+                    .scaleY(0f)
+                    .setDuration(200)
+                    .afterDone { stopButton.gone() }
+                    .setInterpolator(AccelerateDecelerateInterpolator())
+                    .start()
+        }
+    }
+
     override fun onResume() {
+        actionCreator.register(this)
         super.onResume()
-        //downloadCreator.checkApk()
+        val id = Preference.get("user", "userId" to -1L) as Long
+        //未登录
+        if (id == -1L) {
+            if (recyclerView.adapter is ServerAudioAdapter) {
+                recyclerView.adapter = AudioAdapter(mutableListOf(), this)
+                emptyView.show("什么都没有，快去搜索吧", "输入歌名或者歌手名进行搜素")
+            }
+        }
     }
 
     override fun onChange(atc: Action) {
         when (atc.type) {
             "search" -> {
                 emptyView.hide()
-                adapter.data.clear()
-                adapter.data.addAll(atc.data as MutableList<AudioInfo>)
-                adapter.notifyDataSetChanged()
+                recyclerView.adapter = AudioAdapter(atc.data as MutableList<AudioInfo>, this@MainActivity)
+                (recyclerView.adapter as AudioAdapter).onItemClick {
+                    Permission.STORAGE.doAfterGet(this) {
+                        inUiThread { showBottomSheet(it) }
+                    }
+                }
             }
             "suggestion" -> {
-                showToast("in")
                 val list = atc.data as MutableList<SuggestionContainer>
                 val array = mutableListOf<String>()
                 list.map { it.suggestions.map { array.add(it.info) } }
-                array.toTypedArray().map { Log.d("asd", it) }
+                array.map { Log.d("asd", it) }
                 searchView.setSuggestions(array.toTypedArray())
+                searchView.setOnItemClickListener { _, _, i, _ ->
+                    searchView.setQuery(array[i], true)
+                }
             }
         }
 

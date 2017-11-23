@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_kugou"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:title="@string/title_kugou" />
+
+    <item
+        android:id="@+id/navigation_cloud"
+        android:icon="@drawable/ic_cloud_white_24dp"
+        android:title="@string/title_cloud" />
+
+    <item
+        android:id="@+id/navigation_dream"
+        android:icon="@drawable/ic_notifications_black_24dp"
+        android:title="@string/title_dream" />
+
+    <item
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/ic_settings_white_24dp"
+        android:title="@string/settings" />
+
+</menu>

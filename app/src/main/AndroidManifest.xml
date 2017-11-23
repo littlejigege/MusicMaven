@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.qg.musicmaven"
-    android:versionCode="2"
-    android:versionName="First">
+    package="com.qg.musicmaven">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -13,7 +11,6 @@
     <application
         android:name=".App"
         android:allowBackup="true"
-        tools:replace = "android:icon"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
@@ -25,7 +22,7 @@
         <activity-alias
             android:name=".Launcher"
             android:label="@string/app_name"
-            android:targetActivity=".ui.MainActivity">
+            android:targetActivity=".mainpage.TestMainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,8 +33,10 @@
         <activity
             android:name=".ui.SettingsActivity"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".ui.StartActivity">
-        </activity>
+        <activity android:name=".ui.StartActivity" />
+        <activity
+            android:name=".mainpage.TestMainActivity"
+            android:label="@string/title_activity_test_main"></activity>
     </application>
 
 </manifest>

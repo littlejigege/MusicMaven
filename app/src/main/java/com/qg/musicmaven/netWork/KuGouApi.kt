@@ -16,7 +16,7 @@ interface KuGouApi {
 
     //根据hash得到audio相关下载地址
     @GET("http://www.kugou.com/yy/index.php?r=play/getdata")
-    fun getAudio(@Query("hash") hash: String): Observable<FeedBack<Audio>>
+    fun getAudio(@Query("hash") hash: String, @Query("album_id") albumId: String): Observable<FeedBack<Audio>>
 
     //获得建议
     @GET("http://searchtip.kugou.com/getSearchTip?MusicTipCount=5&MVTipCount=2&albumcount=2")

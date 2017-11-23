@@ -22,8 +22,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.internal.schedulers.IoScheduler
 import kotlinx.android.synthetic.main.audio_item.view.*
-import org.jetbrains.anko.find
-import org.jetbrains.anko.sdk25.coroutines.onClick
+
 
 /**
  * Created by jimji on 2017/9/9.
@@ -41,7 +40,7 @@ class ServerAudioAdapter(var data: MutableList<ServerAudio>, var ctx: Context) :
         val audioInfo = data[position]
         with(audioInfo) {
             holder.itemView.audioName.text = songName.replace("<em>", "").replace("</em>", "")
-            holder.itemView.singerName.text = singer
+            holder.itemView.singerName.text = singerName.replace("<em>", "").replace("</em>", "")
             loadImg(audioInfo.imgUrl!!, holder.itemView.imageView)
         }
 
@@ -63,7 +62,7 @@ class ServerAudioAdapter(var data: MutableList<ServerAudio>, var ctx: Context) :
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         init {
-            itemView.onClick { _onItemClick(data[adapterPosition]) }
+            itemView.setOnClickListener { _onItemClick(data[adapterPosition]) }
         }
     }
 }

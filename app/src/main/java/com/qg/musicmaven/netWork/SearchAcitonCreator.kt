@@ -25,7 +25,7 @@ class SearchAcitonCreator : ActionCreator() {
         App.kugouApi.getAudioInfoList(keyWord)
                 .subscribeOn(IoScheduler())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object : Observer<FeedBack<AudioInfoContainer>?> {
+                .subscribe(object : Observer<FeedBack<AudioInfoContainer>> {
                     override fun onNext(t: FeedBack<AudioInfoContainer>) {
                         postChange(Action("search", t.data.list))
                     }
@@ -48,7 +48,7 @@ class SearchAcitonCreator : ActionCreator() {
         App.kugouApi.getSuggestion(keyWord)
                 .subscribeOn(IoScheduler())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object : Observer<FeedBack<MutableList<SuggestionContainer>>?> {
+                .subscribe(object : Observer<FeedBack<MutableList<SuggestionContainer>>> {
                     override fun onError(e: Throwable) {
                         e.printStackTrace()
                         postErr(ActionError("suggestionErr", e))

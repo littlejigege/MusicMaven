@@ -4,10 +4,10 @@ import android.app.Activity
 import android.app.DownloadManager
 import android.net.Uri
 import android.util.Log
-import com.jimji.preference.Preference
-import com.liulishuo.filedownloader.BaseDownloadTask
-import com.liulishuo.filedownloader.FileDownloadListener
-import com.liulishuo.filedownloader.FileDownloader
+
+import com.mobile.utils.Preference
+import com.mobile.utils.downloadManager
+import com.mobile.utils.showToast
 import com.qg.musicmaven.App
 import com.qg.musicmaven.download.DownloadCallback
 import com.qg.musicmaven.download.DownloadUtil
@@ -18,8 +18,9 @@ import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.internal.schedulers.IoScheduler
-import org.jetbrains.anko.downloadManager
-import utils.showToast
+import okhttp3.MediaType
+import okhttp3.RequestBody
+
 import java.io.File
 import java.net.URI
 import java.net.URL
@@ -28,14 +29,13 @@ import java.net.URL
  * Created by jimji on 2017/9/13.
  */
 class DownLoadActionCreator(var act: Activity) : ActionCreator() {
-    val utils by lazy { DownloadUtil(act.downloadManager) }
-    private fun getAudio(hash: String, callback: DownloadCallback) {
-        App.kugouApi.getAudio(hash)
+    val utils by lazy { DownloadUtil(downloadManager) }
+    private fun getAudio(hash: String, albumId: String, callback: DownloadCallback) {
+        App.kugouApi.getAudio(hash, albumId)
                 .subscribeOn(IoScheduler())
                 .observeOn(IoScheduler())
-                .subscribe(object : Observer<FeedBack<Audio>?> {
+                .subscribe(object : Observer<FeedBack<Audio>> {
                     override fun onError(e: Throwable) {
-
                     }
 
                     override fun onSubscribe(d: Disposable) {
@@ -47,7 +47,28 @@ class DownLoadActionCreator(var act: Activity) : ActionCreator() {
                     }
 
                     override fun onNext(t: FeedBack<Audio>) {
-                        App.serverApi.postSong(Preference.get("user", "id" to -1L) as Long, t.data.audioName, t.data.imgUrl, t.data.playUrl)
+                        if (!t.data.playUrl.isEmpty()) {
+                            App.serverApi.postSong(RequestBody.create(MediaType.parse("application/json"), JsonMaker.make {
+                                objects {
+                                    "userId" - Preference.get("user", "userId" to -1L)
+                                    "singerName" - t.data.audioName.split("-")[0]
+                                    "songName" - t.data.audioName.split("-")[1]
+                                    "imgUrl" - t.data.imgUrl
+                                    "playUrl" - t.data.playUrl
+                                }
+                            }))
+                                    .subscribeOn(IoScheduler())
+                                    .subscribe(object: Observer<FeedBack<Int>> {
+                                        override fun onComplete() {
+                                        }
+                                        override fun onSubscribe(d: Disposable) {
+                                        }
+                                        override fun onError(e: Throwable) {
+                                        }
+                                        override fun onNext(t: FeedBack<Int>) {
+                                        }
+                                    })
+                        }
                         startDownload(t.data.playUrl, t.data.audioName, callback)
                     }
                 })
@@ -58,7 +79,7 @@ class DownLoadActionCreator(var act: Activity) : ActionCreator() {
     }
 
     fun download(info: AudioInfo, isHQ: Boolean, callback: DownloadCallback) {
-        getAudio(if (isHQ) info.hqFileHash else info.fileHash, callback)
+        getAudio(if (isHQ) info.hqFileHash else info.fileHash, info.albumId, callback)
     }
 
     private fun startDownload(url: String, fileName: String, callback: DownloadCallback) {
@@ -70,6 +91,10 @@ class DownLoadActionCreator(var act: Activity) : ActionCreator() {
 //        request.setTitle(fileName).setDescription("MusicMaven")
 //                .setDestinationUri(Uri.parse("file://${App.DOWNLOAD_PATH}/$fileName.mp3"))
 //        act.downloadManager.enqueue(request)
+        if (File("${App.DOWNLOAD_PATH}/$fileName.mp3").exists()) {
+            showToast("文件已存在")
+            return
+        }
         utils.download(url, fileName, callback)
 //        FileDownloader.getImpl().create(url)
 //                .setPath(App.DOWNLOAD_PATH)

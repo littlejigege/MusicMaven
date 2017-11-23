@@ -4,11 +4,11 @@ import android.graphics.Color
 
 import android.os.Bundle
 import android.view.MenuItem
-
+import com.mobile.utils.*
+import com.mobile.utils.permission.Permission
 import com.qg.musicmaven.App
 import com.qg.musicmaven.R
 import com.qg.musicmaven.utils.FilePicker
-import com.qmuiteam.qmui.util.QMUIStatusBarHelper
 import com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView
 import com.qmuiteam.qmui.widget.grouplist.QMUIGroupListView
 import kotlinx.android.synthetic.main.activity_setting.*
@@ -26,6 +26,16 @@ class SettingsActivity : BaseActivity() {
     }
 
     private fun initView() {
+        if (Preference.get("user", "userId" to -1L) == -1L)
+            logoutButton.gone()
+        else {
+            logoutButton.visiable()
+            logoutButton.onClick {
+                Preference.save("user") { "userId" - -1L }
+                "成功退出登陆".toast()
+                logoutButton.gone()
+            }
+        }
         topBar.setTitle("设置").textColor = Color.WHITE
         topBar.addLeftBackImageButton().onClick { finish() }
         initSettingList()
@@ -62,11 +72,15 @@ class SettingsActivity : BaseActivity() {
                 .addTo(settingList)
         QMUIGroupListView.newSection(this).setTitle("下载相关")
                 .addItemView(downloadPath, {
-                    permissionMan.doAfterGet(permissionMan.STORAGE) {
-                        FilePicker(this, fragmentManager)
-                                .onFinish { downloadPath.setDetailText(App.DOWNLOAD_PATH) }
-                                .show()
+
+                    Permission.STORAGE.doAfterGet(this) {
+                        inUiThread {
+                            FilePicker(this, fragmentManager)
+                                    .onFinish { downloadPath.setDetailText(App.DOWNLOAD_PATH) }
+                                    .show()
+                        }
                     }
+
                 })
                 .addTo(settingList)
     }
@@ -81,5 +95,6 @@ class SettingsActivity : BaseActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
 
 }

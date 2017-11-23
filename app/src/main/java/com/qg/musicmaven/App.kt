@@ -1,22 +1,22 @@
 package com.qg.musicmaven
 
 import android.app.Application
-import com.blankj.utilcode.util.Utils
-import com.facebook.stetho.Stetho
-import com.facebook.stetho.okhttp3.StethoInterceptor
-import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
-import com.github.pwittchen.reactivenetwork.library.rx2.internet.observing.strategy.SocketInternetObservingStrategy
+import android.media.MediaPlayer
+import com.mobile.utils.ActivityManager
+
 import java.io.File
 import kotlin.properties.Delegates
-import com.jimji.preference.Preference
-import com.liulishuo.filedownloader.FileDownloader
+
+import com.mobile.utils.Preference
+import com.mobile.utils.Utils
+import com.mobile.utils.showToast
+
 import com.qg.musicmaven.download.DownloadUtil
 import com.qg.musicmaven.netWork.KuGouApi
 import com.qg.musicmaven.netWork.ServerApi
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+
+
 import okhttp3.OkHttpClient
-import utils.showToast
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -26,11 +26,13 @@ import retrofit2.converter.gson.GsonConverterFactory
  * Created by 小吉哥哥 on 2017/9/7.
  */
 class App : Application() {
+    lateinit var retrofit: Retrofit
+
     companion object {
+        val player by lazy { MediaPlayer() }
         var instance: App by Delegates.notNull()
-        var retrofit: Retrofit by Delegates.notNull()
-        val kugouApi by lazy { App.retrofit.create(KuGouApi::class.java) }
-        val serverApi by lazy { App.retrofit.create(ServerApi::class.java) }
+        val kugouApi by lazy { App.instance.retrofit.create(KuGouApi::class.java) }
+        val serverApi by lazy { App.instance.retrofit.create(ServerApi::class.java) }
         var DOWNLOAD_PATH: String
             set(value) {
                 Preference.save("PATH") { "PATH" - value }
@@ -48,35 +50,16 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        //init my utils
-        Preference.init(this)
-        //ObserveNetWork
-        startObserveNetWork()
-        //build network core
-        buildRetrofit()
-        FileDownloader.setupOnApplicationOnCreate(this)
         DownloadUtil.init(this)
         Utils.init(this)
-        Stetho.initializeWithDefaults(this)
-
+        buildRetrofit()
     }
 
-    private fun startObserveNetWork() {
-        ReactiveNetwork.observeInternetConnectivity(SocketInternetObservingStrategy(), "www.baidu.com")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
-                    if (it) {
-
-                    } else {
-
-                    }
-                }
-    }
-
+    /**
+     * 构建网络
+     */
     private fun buildRetrofit() {
-        val client = OkHttpClient.Builder().addNetworkInterceptor(StethoInterceptor()).build()
-
+        val client = OkHttpClient.Builder().build()
         retrofit = Retrofit.Builder()
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())

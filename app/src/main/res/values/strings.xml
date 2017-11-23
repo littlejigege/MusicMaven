@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Maven</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_test_main">TestMainActivity</string>
+    <string name="title_kugou">外服搜索</string>
+    <string name="title_cloud">云音乐</string>
+    <string name="title_dream">愿望</string>
+    <string name="search">搜索</string>
+    <string name="settings">设置</string>
 </resources>

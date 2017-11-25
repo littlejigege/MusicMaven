@@ -1,6 +1,9 @@
 package com.qg.musicmaven.netWork
 
-import com.qg.musicmaven.modle.*
+import com.qg.musicmaven.modle.bean.Audio
+import com.qg.musicmaven.modle.bean.AudioInfoContainer
+import com.qg.musicmaven.modle.bean.FeedBack
+import com.qg.musicmaven.modle.bean.SuggestionContainer
 import io.reactivex.Observable
 import okhttp3.ResponseBody
 import retrofit2.http.*

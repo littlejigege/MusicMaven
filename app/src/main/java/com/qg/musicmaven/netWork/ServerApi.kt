@@ -1,12 +1,10 @@
 package com.qg.musicmaven.netWork
 
 import com.qg.musicmaven.BuildConfig
-import com.qg.musicmaven.modle.FeedBack
-import com.qg.musicmaven.modle.ServerAudio
+import com.qg.musicmaven.modle.bean.FeedBack
+import com.qg.musicmaven.modle.bean.ServerAudio
 import io.reactivex.Observable
-import io.reactivex.Observer
 import okhttp3.RequestBody
-import okhttp3.Response
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*

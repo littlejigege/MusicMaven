@@ -1,6 +1,7 @@
 package com.qg.musicmaven
 
 import android.app.Application
+import android.content.Context
 import android.media.MediaPlayer
 import com.mobile.utils.ActivityManager
 
@@ -20,6 +21,13 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import com.scwang.smartrefresh.layout.footer.ClassicsFooter
+import com.scwang.smartrefresh.layout.api.RefreshLayout
+import com.scwang.smartrefresh.layout.api.RefreshFooter
+import com.scwang.smartrefresh.layout.api.DefaultRefreshFooterCreater
+import com.scwang.smartrefresh.layout.SmartRefreshLayout
+import com.scwang.smartrefresh.layout.footer.BallPulseFooter
+import com.scwang.smartrefresh.layout.footer.FalsifyFooter
 
 
 /**
@@ -53,6 +61,7 @@ class App : Application() {
         DownloadUtil.init(this)
         Utils.init(this)
         buildRetrofit()
+        setFooter()
     }
 
     /**
@@ -66,5 +75,11 @@ class App : Application() {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .baseUrl("http://songsearch.kugou.com/")
                 .build()
+    }
+    private fun setFooter() {
+        SmartRefreshLayout.setDefaultRefreshFooterCreater { context, layout ->
+            //指定为经典Footer，默认是 BallPulseFooter
+            BallPulseFooter(context)
+        }
     }
 }

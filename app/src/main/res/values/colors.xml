@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#1490f7</color>
+    <color name="colorPrimaryDark">#1490f7</color>
     <color name="colorAccent">#2fa881</color>
     <color name="toolBar">#1490f7</color>
     <color name="statusBar">#0f71d6</color>
@@ -24,7 +24,6 @@
     <color name="app_color_theme_8">#AC8FEF</color> <!-- Lavender -->
     <color name="app_color_theme_9">#EE85C1</color> <!-- Pink Rose -->
 
-    <color name="app_color_description">@color/qmui_config_color_gray_5</color>
 
     <color name="bar_divider">#D4D6D8</color>
     <color name="tab_panel_bg">#ffffff</color>

@@ -1,8 +1,6 @@
-package com.qg.musicmaven.modle
+package com.qg.musicmaven.modle.bean
 
-import android.provider.ContactsContract
 import com.google.gson.annotations.SerializedName
-import java.time.Duration
 
 /**
  * Created by 小吉哥哥 on 2017/9/8.

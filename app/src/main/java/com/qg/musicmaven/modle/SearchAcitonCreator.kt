@@ -1,9 +1,12 @@
-package com.qg.musicmaven.netWork
+package com.qg.musicmaven.modle
 
 import com.qg.musicmaven.App
-import com.qg.musicmaven.modle.AudioInfoContainer
-import com.qg.musicmaven.modle.FeedBack
-import com.qg.musicmaven.modle.SuggestionContainer
+import com.qg.musicmaven.modle.bean.AudioInfoContainer
+import com.qg.musicmaven.modle.bean.FeedBack
+import com.qg.musicmaven.modle.bean.SuggestionContainer
+import com.qg.musicmaven.netWork.Action
+import com.qg.musicmaven.netWork.ActionCreator
+import com.qg.musicmaven.netWork.ActionError
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -12,12 +15,13 @@ import io.reactivex.internal.schedulers.IoScheduler
 /**
  * Created by jimji on 2017/9/11.
  */
-class SearchAcitonCreator : ActionCreator() {
+object SearchAcitonCreator : ActionCreator() {
     var disposable: Disposable? = null
     fun cancelSuggestion() {
         if (disposable != null) {
             disposable!!.dispose()
             disposable = null
+
         }
     }
 
@@ -66,6 +70,5 @@ class SearchAcitonCreator : ActionCreator() {
                         disposable = d
                     }
                 })
-
     }
 }

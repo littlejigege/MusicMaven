@@ -1,4 +1,4 @@
-package com.qg.musicmaven.ui
+package com.qg.musicmaven
 
 import android.annotation.SuppressLint
 import android.os.Bundle

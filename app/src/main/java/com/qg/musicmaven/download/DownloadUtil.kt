@@ -1,23 +1,15 @@
 package com.qg.musicmaven.download
 
-import android.Manifest
 import android.app.Activity
 import android.app.Application
 import android.app.DownloadManager
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.net.Uri
 import android.util.Log
 
 import com.mobile.utils.inUiThread
 import com.mobile.utils.permission.Permission
-import com.mobile.utils.permission.PermissionActivity
 import com.qg.musicmaven.App
-import com.qg.musicmaven.modle.FeedBack
-import com.qg.musicmaven.ui.MainActivity
-import com.qmuiteam.qmui.widget.dialog.QMUIDialog
+import com.qg.musicmaven.modle.bean.FeedBack
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -76,14 +68,7 @@ class DownloadUtil(val manager: DownloadManager) {
                             Permission.STORAGE.doAfterGet(act){
                                 File("${App.DOWNLOAD_PATH}/FreeMusic.apk").delete()
                                 inUiThread {
-                                    QMUIDialog.MessageDialogBuilder(act).setTitle("有新版本")
-                                            .setMessage("发现新版本，是否要下载")
-                                            .addAction("取消", { dialog, _ -> dialog.dismiss() })
-                                            .addAction("下载", { dialog, _ ->
-                                                dialog.dismiss()
-                                                downloadApk(value.data)
-                                            })
-                                            .show()
+
                                 }
                             }
 

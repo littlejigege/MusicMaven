@@ -11,10 +11,22 @@ import com.qg.musicmaven.BaseView;
 
 public interface MainPageContract {
     interface View extends BaseView<Presenter> {
+        void openKugouPage();
 
+        void openCloudPage();
+
+        void openDreamPage();
+
+        void openSettingPage();
     }
 
     interface Presenter extends BasePresenter<View> {
+        void onKugouClick();
 
+        void onCloudClick();
+
+        void onDreamClick();
+
+        void onSettingClick();
     }
 }

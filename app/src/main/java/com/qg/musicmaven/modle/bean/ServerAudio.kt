@@ -1,4 +1,4 @@
-package com.qg.musicmaven.modle
+package com.qg.musicmaven.modle.bean
 
 /**
  * Created by jimji on 2017/9/14.

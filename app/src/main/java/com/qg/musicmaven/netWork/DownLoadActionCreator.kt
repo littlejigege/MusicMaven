@@ -1,9 +1,7 @@
 package com.qg.musicmaven.netWork
 
 import android.app.Activity
-import android.app.DownloadManager
-import android.net.Uri
-import android.util.Log
+import com.mobile.utils.JsonMaker
 
 import com.mobile.utils.Preference
 import com.mobile.utils.downloadManager
@@ -11,19 +9,16 @@ import com.mobile.utils.showToast
 import com.qg.musicmaven.App
 import com.qg.musicmaven.download.DownloadCallback
 import com.qg.musicmaven.download.DownloadUtil
-import com.qg.musicmaven.modle.Audio
-import com.qg.musicmaven.modle.AudioInfo
-import com.qg.musicmaven.modle.FeedBack
+import com.qg.musicmaven.modle.bean.Audio
+import com.qg.musicmaven.modle.bean.AudioInfo
+import com.qg.musicmaven.modle.bean.FeedBack
 import io.reactivex.Observer
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.internal.schedulers.IoScheduler
 import okhttp3.MediaType
 import okhttp3.RequestBody
 
 import java.io.File
-import java.net.URI
-import java.net.URL
 
 /**
  * Created by jimji on 2017/9/13.

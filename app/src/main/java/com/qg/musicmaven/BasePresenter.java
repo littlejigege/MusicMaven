@@ -5,6 +5,6 @@ package com.qg.musicmaven;
  */
 
 public interface BasePresenter<T> {
-    void dropView(T view);
+    void dropView();
     void takeView(T view);
 }

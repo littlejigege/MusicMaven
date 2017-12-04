@@ -3,6 +3,8 @@ package com.qg.musicmaven
 import android.app.Application
 import android.content.Context
 import android.media.MediaPlayer
+import com.iflytek.cloud.SpeechConstant
+import com.iflytek.cloud.SpeechUtility
 import com.mobile.utils.ActivityManager
 
 import java.io.File
@@ -62,6 +64,8 @@ class App : Application() {
         Utils.init(this)
         buildRetrofit()
         setFooter()
+        SpeechUtility.createUtility(this, SpeechConstant.APPID +"=5a16dc2a");
+
     }
 
     /**

@@ -60,10 +60,10 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        DownloadUtil.init(this)
+//        DownloadUtil.init(this)
         Utils.init(this)
-        buildRetrofit()
-        setFooter()
+//        buildRetrofit()
+//        setFooter()
         SpeechUtility.createUtility(this, SpeechConstant.APPID +"=5a16dc2a");
 
     }

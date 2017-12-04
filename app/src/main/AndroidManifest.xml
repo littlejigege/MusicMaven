@@ -16,6 +16,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity
+            android:name=".mainpage.TestMainActivity"
+            android:label="@string/title_activity_test_main" />
 
         <activity-alias
             android:name=".Launcher"
@@ -28,10 +31,9 @@
             </intent-filter>
         </activity-alias>
 
-
         <activity
-            android:name=".mainpage.TestMainActivity"
-            android:label="@string/title_activity_test_main" />
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"></activity>
     </application>
 
 </manifest>

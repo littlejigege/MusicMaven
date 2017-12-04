@@ -1,6 +1,7 @@
 package com.qg.musicmaven.modle
 
 import com.qg.musicmaven.App
+import com.qg.musicmaven.modle.bean.AudioInfo
 import com.qg.musicmaven.modle.bean.AudioInfoContainer
 import com.qg.musicmaven.modle.bean.FeedBack
 import com.qg.musicmaven.modle.bean.SuggestionContainer
@@ -25,17 +26,17 @@ object SearchAcitonCreator : ActionCreator() {
         }
     }
 
-    fun search(keyWord: String) {
-        App.kugouApi.getAudioInfoList(keyWord)
+    fun searchFromKugou(keyWord: String, page: Int, action: (MutableList<AudioInfo>) -> Unit) {
+        App.kugouApi.getAudioInfoList(keyWord, page)
                 .subscribeOn(IoScheduler())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : Observer<FeedBack<AudioInfoContainer>> {
                     override fun onNext(t: FeedBack<AudioInfoContainer>) {
-                        postChange(Action("search", t.data.list))
+                        action(t.data.list)
                     }
 
                     override fun onError(e: Throwable) {
-                        postErr(ActionError("searchErr", e))
+                        e.printStackTrace()
                     }
 
                     override fun onComplete() {
@@ -48,18 +49,21 @@ object SearchAcitonCreator : ActionCreator() {
                 })
     }
 
-    fun getSuggestion(keyWord: String) {
+    fun getSuggestionFromKugou(keyWord: String, action: (MutableList<String>) -> Unit) {
         App.kugouApi.getSuggestion(keyWord)
                 .subscribeOn(IoScheduler())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : Observer<FeedBack<MutableList<SuggestionContainer>>> {
                     override fun onError(e: Throwable) {
                         e.printStackTrace()
-                        postErr(ActionError("suggestionErr", e))
                     }
 
                     override fun onNext(t: FeedBack<MutableList<SuggestionContainer>>) {
-                        postChange(Action("suggestion", t.data))
+                        val list: MutableList<String> = mutableListOf()
+                        for (container in t.data) {
+                            container.suggestions.forEach { list.add(it.info) }
+                        }
+                        action(list)
                     }
 
                     override fun onComplete() {

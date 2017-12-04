@@ -1,31 +1,26 @@
 package com.qg.musicmaven.mainpage
 
+import com.qg.musicmaven.BasePresenter
+
 /**
  * Created by jimji on 17-11-23.
  */
-class MainPagePresenter : MainPageContract.Presenter {
-    private var view: MainPageContract.View? = null
-    override fun dropView() {
-        view = null
-    }
+class MainPagePresenter : BasePresenter<MainPageContract.View>() {
 
-    override fun takeView(view: MainPageContract.View) {
-        this.view = view
-    }
 
-    override fun onKugouClick() {
+    fun onKugouClick() {
         view?.openKugouPage()
     }
 
-    override fun onCloudClick() {
+    fun onCloudClick() {
         view?.openCloudPage()
     }
 
-    override fun onDreamClick() {
+    fun onDreamClick() {
         view?.openDreamPage()
     }
 
-    override fun onSettingClick() {
+    fun onSettingClick() {
         view?.openSettingPage()
     }
 }

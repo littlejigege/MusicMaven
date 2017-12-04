@@ -32,6 +32,17 @@ class AudioAdapter(var data: MutableList<AudioInfo>, var ctx: Context) : Recycle
         _onItemClick = o
     }
 
+    fun setMoreData(moreData: MutableList<AudioInfo>) {
+        data.addAll(moreData)
+        notifyDataSetChanged()
+    }
+
+    fun replaceData(newData: MutableList<AudioInfo>) {
+        data.clear()
+        data.addAll(newData)
+        notifyDataSetChanged()
+    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val audioInfo = data[position]
 

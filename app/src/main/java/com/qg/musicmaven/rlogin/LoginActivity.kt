@@ -16,7 +16,7 @@ import android.widget.EditText
 import com.qg.musicmaven.R
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() , View.OnClickListener {
+class LoginActivity : AppCompatActivity() , View.OnClickListener {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

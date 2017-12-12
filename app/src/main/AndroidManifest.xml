@@ -32,8 +32,8 @@
             android:label="@string/title_activity_settings"></activity>
 
         <activity android:name=".rlogin.LoginSuccessActivity"/>
-        <activity android:name=".rlogin.RegisterActivity"/>
-        <activity android:name=".rlogin.MainActivity">
+        <activity android:name=".rlogin.RegisterActivity" android:theme="@style/Translucent"/>
+        <activity android:name=".rlogin.LoginActivity">
 
 
             <intent-filter>

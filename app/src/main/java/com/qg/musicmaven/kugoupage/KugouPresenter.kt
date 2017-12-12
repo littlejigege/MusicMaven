@@ -1,13 +1,13 @@
 package com.qg.musicmaven.kugoupage
 
-import com.qg.musicmaven.BasePresenter
+import com.qg.musicmaven.base.AbsBasePresenter
 import com.qg.musicmaven.modle.SearchAcitonCreator
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Created by jimiji on 2017/12/3.
  */
-class KugouPresenter : BasePresenter<IView>() {
+class KugouPresenter : AbsBasePresenter<IView>() {
     private val pageNext = AtomicInteger(2)
     var keyWord = ""
     /**

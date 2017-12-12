@@ -1,10 +1,18 @@
 package com.qg.musicmaven.modle
 
+import android.support.annotation.WorkerThread
 import com.mobile.utils.preference
+import com.mobile.utils.toast
+import com.qg.musicmaven.modle.bean.ServerAudio
 import com.qiniu.android.http.ResponseInfo
 import com.qiniu.android.storage.Configuration
 import com.qiniu.android.storage.UpCompletionHandler
+import com.qiniu.android.storage.UpProgressHandler
 import com.qiniu.android.storage.UploadManager
+import com.qiniu.android.storage.UploadOptions
+import com.qiniu.common.Zone
+import com.qiniu.storage.BucketManager
+import com.qiniu.util.Auth
 import org.json.JSONObject
 import java.io.File
 
@@ -12,24 +20,34 @@ import java.io.File
  * Created by jimiji on 2017/12/3.
  */
 object QiNiu {
+    var accessKey = "JTzzyirY3g84GgVl-LsFePbusNOx1xWjWp-oLEMl"
+    var secretKey = "Rw1vCPSY5gfn-ia__vhSt9GwofLu501V_Ecr6wzl"
+    var bucket = "wilderg"
     //上传凭证，七牛要求的，痕迹吧无语
-    private val TOKEN: String by preference("qiniu", "token" to "")
+    private val TOKEN: String
+        get() = Auth.create(accessKey, secretKey).uploadToken(bucket)
+
     private val upLoadManager: UploadManager = UploadManager(Configuration.Builder().build())
-    /**
-     * 凭证是否有效
-     */
-    fun isTokenValid(): Boolean {
-        return !TOKEN.isEmpty()
-    }
 
-    fun upLoad() {
-        upLoadManager.put(byteArrayOf(12,2,3,2,3,24,4), null, "JTzzyirY3g84GgVl-LsFePbusNOx1xWjWp-oLEMl:ovWwk5-Hx3JY_P-6pDgfwtpj_A0=:eyJzY29wZSI6IndpbGRlcmciLCJkZWFkbGluZSI6MTUxMjI5NDc4M30=", { key, info, response ->
-            if (info.isOK) {
-                if (info.statusCode == ResponseInfo.InvalidToken) {
-
-                }
+    //异步上传
+    fun upLoad(filePath: String, progressHandler: UpProgressHandler) {
+        upLoadManager.put(filePath, null, TOKEN, { key, info, _ ->
+            if (!info.isOK) {
+                info.error.toast()
+            } else {
+                "上传完毕".toast()
             }
 
-        }, null)
+        }, UploadOptions(null, null, false, progressHandler, null))
+    }
+
+    @WorkerThread
+    fun getAllFile(): MutableList<ServerAudio> {
+        val list = mutableListOf<ServerAudio>()
+        val it = BucketManager(Auth.create(accessKey, secretKey), com.qiniu.storage.Configuration(Zone.autoZone())).createFileListIterator(bucket, "")
+        while (it.hasNext()) {
+            list.addAll(it.next().map { ServerAudio("", "http://ozwr11exu.bkt.clouddn.com/${it.key}", it.key, it.putTime.toString()) })
+        }
+        return list
     }
 }

@@ -18,6 +18,8 @@ import com.qg.musicmaven.modle.QiNiu
 import com.qg.musicmaven.modle.SearchAcitonCreator
 import com.qg.musicmaven.settingpage.SettingFragment
 import kotlinx.android.synthetic.main.activity_test_main.*
+import java.util.*
+import kotlin.concurrent.thread
 
 
 class TestMainActivity : BaseActivity(), MainPageContract.View {
@@ -144,6 +146,7 @@ class TestMainActivity : BaseActivity(), MainPageContract.View {
         presenter.dropView()
         super.onDestroy()
     }
+
 
     override fun openKugouPage() {
         replaceFragment(kugouFragment)

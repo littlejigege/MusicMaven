@@ -6,7 +6,10 @@ import android.content.res.TypedArray
 import android.preference.Preference
 import android.support.v4.app.Fragment
 import android.util.AttributeSet
+import com.mobile.utils.inUiThread
+import com.mobile.utils.permission.Permission
 import com.mobile.utils.showToast
+import com.qg.musicmaven.modle.QiNiu
 import com.qg.musicmaven.utils.FilePicker
 
 /**
@@ -32,13 +35,18 @@ class PathPreference : Preference {
     }
 
     override fun onClick() {
+        Permission.STORAGE.doAfterGet(context as Activity) {
+            inUiThread {
 
-        val picker = FilePicker(context as Activity, (context as Activity).fragmentManager, FilePicker.PICK_PAHT)
-        picker.onFinish {
-            persistString(it[0])
-            callChangeListener(it[0])
+                val picker = FilePicker(context as Activity, (context as Activity).fragmentManager, FilePicker.PICK_PAHT)
+                picker.onFinish {
+                    persistString(it[0])
+                    callChangeListener(it[0])
+                }
+                picker.show()
+            }
         }
-        picker.show()
+
         super.onClick()
     }
 }

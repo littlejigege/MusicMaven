@@ -66,7 +66,6 @@ class FilePicker(var act: Activity, var fragM: FragmentManager, val type: Int) {
     private fun setAction() {
         mChooser.setOnSelectListener {
             if (type == PICK_PAHT) {
-                App.DOWNLOAD_PATH = it
                 _onFinish(mutableListOf(it))
             } else {
                 _onFinish(mutableListOf(it))

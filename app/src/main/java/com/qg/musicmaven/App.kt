@@ -3,16 +3,13 @@ package com.qg.musicmaven
 import android.app.Application
 import android.content.Context
 import android.media.MediaPlayer
-import com.mobile.utils.ActivityManager
+import com.mobile.utils.*
 
 import java.io.File
 import kotlin.properties.Delegates
 
-import com.mobile.utils.Preference
-import com.mobile.utils.Utils
-import com.mobile.utils.showToast
-
 import com.qg.musicmaven.download.DownloadUtil
+import com.qg.musicmaven.modle.QiNiu
 import com.qg.musicmaven.netWork.KuGouApi
 import com.qg.musicmaven.netWork.ServerApi
 
@@ -28,6 +25,7 @@ import com.scwang.smartrefresh.layout.api.DefaultRefreshFooterCreater
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
 import com.scwang.smartrefresh.layout.footer.BallPulseFooter
 import com.scwang.smartrefresh.layout.footer.FalsifyFooter
+import org.jetbrains.anko.defaultSharedPreferences
 
 
 /**
@@ -41,16 +39,12 @@ class App : Application() {
         var instance: App by Delegates.notNull()
         val kugouApi by lazy { App.instance.retrofit.create(KuGouApi::class.java) }
         val serverApi by lazy { App.instance.retrofit.create(ServerApi::class.java) }
-        var DOWNLOAD_PATH: String
-            set(value) {
-                Preference.save("PATH") { "PATH" - value }
-            }
+        val DOWNLOAD_PATH: String
             get() {
-                val path = Preference.get("PATH", "PATH" to "/storage/emulated/0/MusicMaven") as String
+                //把下载路径从默认的preference里面拿出来
+                val path = Preference.get("${instance.packageName}_preferences", "PATH" to "/storage/emulated/0/MusicMaven") as String
                 val file = File(path)
-                if (!file.exists()) {
-                    file.mkdirs()
-                }
+                file.toggleFile()
                 return path
             }
     }
@@ -76,6 +70,7 @@ class App : Application() {
                 .baseUrl("http://songsearch.kugou.com/")
                 .build()
     }
+
     private fun setFooter() {
         SmartRefreshLayout.setDefaultRefreshFooterCreater { context, layout ->
             //指定为经典Footer，默认是 BallPulseFooter

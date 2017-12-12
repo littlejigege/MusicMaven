@@ -8,13 +8,11 @@ import android.view.Menu
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.TextView
 import com.miguelcatalan.materialsearchview.MaterialSearchView
-import com.mobile.utils.showToast
 import com.qg.musicmaven.R
-import com.qg.musicmaven.BaseActivity
+import com.qg.musicmaven.base.BaseActivity
 import com.qg.musicmaven.cloudpage.CloudFragment
 import com.qg.musicmaven.dreampage.DreamFragment
 import com.qg.musicmaven.kugoupage.KugouFragment
-import com.qg.musicmaven.modle.QiNiu
 import com.qg.musicmaven.modle.SearchAcitonCreator
 import com.qg.musicmaven.settingpage.SettingFragment
 import kotlinx.android.synthetic.main.activity_test_main.*

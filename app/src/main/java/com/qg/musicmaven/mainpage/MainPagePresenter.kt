@@ -1,11 +1,11 @@
 package com.qg.musicmaven.mainpage
 
-import com.qg.musicmaven.BasePresenter
+import com.qg.musicmaven.base.AbsBasePresenter
 
 /**
  * Created by jimji on 17-11-23.
  */
-class MainPagePresenter : BasePresenter<MainPageContract.View>() {
+class MainPagePresenter : AbsBasePresenter<MainPageContract.View>() {
 
 
     fun onKugouClick() {

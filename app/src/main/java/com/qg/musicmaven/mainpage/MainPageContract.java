@@ -1,16 +1,13 @@
 package com.qg.musicmaven.mainpage;
 
-import android.support.v7.widget.SearchView;
-
-import com.qg.musicmaven.BasePresenter;
-import com.qg.musicmaven.BaseView;
+import com.qg.musicmaven.base.BaseView;
 
 /**
  * Created by jimji on 17-11-23.
  */
 
 public interface MainPageContract {
-    interface View extends BaseView<String> {
+    interface View extends BaseView {
         void openKugouPage();
 
         void openCloudPage();

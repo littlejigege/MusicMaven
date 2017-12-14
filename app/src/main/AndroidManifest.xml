@@ -18,7 +18,13 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".mainpage.TestMainActivity"
-            android:label="@string/title_activity_test_main" />
+            android:label="@string/title_activity_test_main" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <activity-alias
             android:name=".Launcher"
@@ -36,11 +42,7 @@
         <activity android:name=".rlogin.LoginActivity">
 
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
 
         </activity>
 

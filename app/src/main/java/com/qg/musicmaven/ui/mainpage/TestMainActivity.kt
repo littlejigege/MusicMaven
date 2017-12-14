@@ -15,6 +15,7 @@ import com.qg.musicmaven.dreampage.DreamFragment
 import com.qg.musicmaven.kugoupage.KugouFragment
 import com.qg.musicmaven.modle.SearchAcitonCreator
 import com.qg.musicmaven.settingpage.SettingFragment
+import com.qg.musicmaven.ui.mainpage.MainPageContract
 import kotlinx.android.synthetic.main.activity_test_main.*
 
 

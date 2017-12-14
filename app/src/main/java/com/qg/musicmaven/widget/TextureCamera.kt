@@ -8,6 +8,7 @@ import android.util.Log
 import android.os.Environment
 import android.view.TextureView
 import com.mobile.utils.toBytes
+import kotlinx.coroutines.experimental.async
 import org.jetbrains.anko.doAsync
 import java.io.ByteArrayOutputStream
 import java.io.FileOutputStream
@@ -16,7 +17,10 @@ import java.io.FileOutputStream
 /**
  * Created by steve on 17-10-14.
  */
-class TextureCamera : TextureView , TextureView.SurfaceTextureListener,Camera.PreviewCallback,Camera.FaceDetectionListener{
+class TextureCamera : TextureView , TextureView.SurfaceTextureListener,Camera.PreviewCallback,Camera.FaceDetectionListener, Camera.AutoFocusCallback {
+    override fun onAutoFocus(success: Boolean, camera: Camera?) {
+
+    }
 
     override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
         Log.e("TextureCamera","CHANGE")
@@ -28,6 +32,7 @@ class TextureCamera : TextureView , TextureView.SurfaceTextureListener,Camera.Pr
     }
 
     override fun onSurfaceTextureDestroyed(surface: SurfaceTexture?): Boolean {
+        available = false
         mCamera.setPreviewCallback(null)
         mCamera.stopPreview()
         mCamera.lock()
@@ -41,12 +46,14 @@ class TextureCamera : TextureView , TextureView.SurfaceTextureListener,Camera.Pr
 
     private var supportFaceDetecte = false
 
+    private var available = false
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
 
-
+        available = true
         mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT)
         mCamera.setDisplayOrientation(90)
 
+        mCamera.parameters.focusMode=Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE;
         val sizes = mCamera.parameters.supportedPreviewSizes
         val size = getOptimalSzie(sizes)
         val supportWith = size.height
@@ -70,6 +77,13 @@ class TextureCamera : TextureView , TextureView.SurfaceTextureListener,Camera.Pr
         if(supportFaceDetecte)
         mCamera.startFaceDetection()
 
+
+        async {
+            while(available) {
+                mCamera.autoFocus(this@TextureCamera)
+                Thread.sleep(3000)
+            }
+        }
 
     }
 
@@ -127,7 +141,7 @@ class TextureCamera : TextureView , TextureView.SurfaceTextureListener,Camera.Pr
 
     }
 
-    private var hasTake = false
+    var hasTake = false
     private var allowTake = false
     override fun onFaceDetection(faces: Array<out Camera.Face>?, camera: Camera?) {
         takePhotoAnyWay()

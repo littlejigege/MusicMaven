@@ -1,4 +1,4 @@
-package com.qg.musicmaven.mainpage;
+package com.qg.musicmaven.ui.mainpage;
 
 import com.qg.musicmaven.base.BaseView;
 

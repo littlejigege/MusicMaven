@@ -51,7 +51,7 @@ dependencies {
     //    //事件分发
     //    compile 'org.greenrobot:eventbus:3.0.0'
     //我的工具库
-    compile 'com.github.littlejigege:suger:v0.0.8'
+    compile 'com.github.littlejigege:suger:v0.0.8.1'
     //别人的工具
     //    compile 'com.blankj:utilcode:1.9.0'
     //材料搜索栏

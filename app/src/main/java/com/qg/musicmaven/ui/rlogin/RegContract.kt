@@ -8,19 +8,17 @@ import com.qg.musicmaven.modle.bean.VerifyResult
 /**
  * Created by steve on 17-12-12.
  */
-interface RLContract {
+interface RegContract {
 
     interface View : BaseView {
         fun onError(e : Throwable);
-        fun alreadyRegister()
+        fun alreadyRegister(uuid:String)
         fun registerSuccess()
-        fun loginSuccess(user:VerifyResult.Candidate)
-        fun loginFailed()
     }
 
     interface Presenter : BasePresenter<View>{
         fun register(bytes: ByteArray)
-        fun verify(bytes: ByteArray,type : Int)
+        fun normalregister(method : String,  email:String="",password:String="" ,count : String="",faceId:String="")
     }
 
 

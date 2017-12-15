@@ -3,6 +3,7 @@ package com.qg.musicmaven.netWork
 import com.qg.musicmaven.App
 import com.qg.musicmaven.BuildConfig
 import com.qg.musicmaven.modle.bean.FeedBack
+import com.qg.musicmaven.modle.bean.RegisterBody
 import com.qg.musicmaven.modle.bean.ServerAudio
 import com.qg.musicmaven.modle.bean.Singer
 import com.qg.musicmaven.modle.bean.Wish
@@ -27,7 +28,7 @@ interface ServerApi {
     fun postSong(@Body body: RequestBody): Observable<FeedBack<Int>>
 
     @Headers("Content-Type: application/json", "Accept: application/json")
-    @POST("${App.SERVER_ADDRESS}/user/register")
+    @POST("http://120.77.38.183:8080/gaojiancheng.mavenmusic/user/verify")
     fun register(@Body body: RequestBody): Observable<FeedBack<Int>>
 
     @GET("${App.SERVER_ADDRESS}/user/getcount")

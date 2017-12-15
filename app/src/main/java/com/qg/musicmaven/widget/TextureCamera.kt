@@ -19,13 +19,20 @@ import java.io.FileOutputStream
  * Created by steve on 17-10-14.
  */
 class TextureCamera : TextureView , TextureView.SurfaceTextureListener,Camera.PreviewCallback,Camera.FaceDetectionListener, Camera.AutoFocusCallback {
+
+    var supportHeight : Int? = null
+    var radio : Float? = null
+    var mWidith : Int? = null
+
     override fun onAutoFocus(success: Boolean, camera: Camera?) {
 
     }
 
     override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
-        Log.e("TextureCamera","CHANGE")
-
+        if(supportHeight!=null && radio != null && mWidith != null){
+            setMeasuredDimension(mWidith!!,(supportHeight!! * radio!!).toInt())
+            layout(0, (-(supportHeight!! * radio!!)/5).toInt(),width, ((supportHeight!! * radio!!).toInt()-(supportHeight!! * radio!!)/5).toInt())
+        }
     }
 
     override fun onSurfaceTextureUpdated(surface: SurfaceTexture?) {
@@ -40,15 +47,13 @@ class TextureCamera : TextureView , TextureView.SurfaceTextureListener,Camera.Pr
         mCamera.release()
         Log.e("TextureCamera","DESTORY")
         return true
-
-
-    
     }
 
     private var supportFaceDetecte = false
 
     private var available = false
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
+        mWidith =  width
 
         available = true
         mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT)
@@ -58,10 +63,12 @@ class TextureCamera : TextureView , TextureView.SurfaceTextureListener,Camera.Pr
         val sizes = mCamera.parameters.supportedPreviewSizes
         val size = getOptimalSzie(sizes)
         val supportWith = size.height
-        val supportHeight : Int = size.width
-        val radio : Float  = width.toFloat()/supportWith
-        setMeasuredDimension(width,(supportHeight*radio).toInt())
-        layout(0, (-(supportHeight*radio)/5).toInt(),width, ((supportHeight*radio).toInt()-(supportHeight*radio)/5).toInt())
+
+        supportHeight = size.width
+        radio = width.toFloat()/supportWith
+
+        setMeasuredDimension(width,(supportHeight!! * radio!!).toInt())
+        layout(0, (-(supportHeight!! * radio!!)/5).toInt(),width, ((supportHeight!! * radio!!).toInt()-(supportHeight!! * radio!!)/5).toInt())
 
 
         if(mCamera.parameters.maxNumDetectedFaces > 0 ) supportFaceDetecte = true
@@ -132,6 +139,8 @@ class TextureCamera : TextureView , TextureView.SurfaceTextureListener,Camera.Pr
 //            val out = ByteArrayOutputStream()
 //            yuv.compressToJpeg(Rect(0, 0, width, height), 50, out)
 //            val bytes = out.toByteArray()
+
+            doSth?.invoke()
             doAsync {
 
                 detected?.invoke(compressByQuality(getBitmap(), (1024*1.5).toLong())!!.toBytes())
@@ -160,6 +169,11 @@ class TextureCamera : TextureView , TextureView.SurfaceTextureListener,Camera.Pr
 
     fun onFaceDetected(detected : ( bitmap : ByteArray )->Unit){
         this.detected = detected
+    }
+
+    private var doSth : (()->Unit)? = null
+    fun onstartTake(doSth : ()->Unit){
+        this.doSth = doSth
     }
 
 }

@@ -33,8 +33,8 @@
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"></activity>
 
-        <activity android:name=".rlogin.RegisterActivity" android:theme="@style/Translucent"/>
-        <activity android:name=".rlogin.LoginActivity">
+        <activity android:name=".rlogin.RegisterActivity" android:theme="@style/Translucent" android:noHistory="true"/>
+        <activity android:name=".rlogin.LoginActivity" android:noHistory="true">
 
 
             <intent-filter>

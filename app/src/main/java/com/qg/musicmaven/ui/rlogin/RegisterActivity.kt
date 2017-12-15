@@ -9,6 +9,7 @@ import android.transition.TransitionInflater
 import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.animation.AccelerateInterpolator
+import com.mobile.utils.showToast
 import com.qg.musicmaven.base.BaseActivity
 import com.qg.musicmaven.R
 import kotlinx.android.synthetic.main.activity_register.*
@@ -67,7 +68,7 @@ class RegisterActivity : BaseActivity(), RLContract.View {
 
 
         camera.onFaceDetected { bytes ->
-
+            showToast("有人脸")
             mPresenter.verify(bytes,RLPresenter.TYPE_PREREGISTER)
 
         }

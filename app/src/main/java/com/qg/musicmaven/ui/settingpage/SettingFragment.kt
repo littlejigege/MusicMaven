@@ -1,20 +1,11 @@
 package com.qg.musicmaven.settingpage
 
 import android.os.Bundle
-import android.app.Fragment
 import android.preference.PreferenceFragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import com.mobile.utils.Preference
-import com.mobile.utils.inUiThread
-import com.mobile.utils.permission.Permission
+import com.qg.musicmaven.App
 import com.qg.musicmaven.R
-import com.qg.musicmaven.mainpage.TestMainActivity
-import com.qg.musicmaven.utils.FilePicker
-import kotlinx.android.synthetic.main.frag_settings.view.*
+import com.qg.musicmaven.ui.mainpage.TestMainActivity
 import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.sdk25.coroutines.onClick
 
 /**
  * Created by jimji on 17-11-23.
@@ -46,20 +37,9 @@ class SettingFragment : PreferenceFragment() {
         //第一次手动同步summary
         path.onPreferenceChangeListener
                 .onPreferenceChange(path, activity.defaultSharedPreferences.getString(path.key, ""))
+        findPreference("USER_NAME").summary = App.instance.getUser()?.customerName
+        findPreference("USER_EMAIL").summary = App.instance.getUser()?.userEmail
     }
 
-    //private lateinit var rootView: View
-//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-//        TestMainActivity.fragMentShowingTag = TAG
-//        rootView = inflater.inflate(R.layout.frag_settings, container, false)
-//        rootView.setPathButton.onClick {
-//            //获取权限之后再打开，保险
-//            Permission.STORAGE.doAfterGet(activity) {
-//                inUiThread {
-//                    FilePicker(activity, fragmentManager,FilePicker.PICK_AUDIO).show()
-//                }
-//            }
-//        }
-//        return rootView
-//    }
+
 }

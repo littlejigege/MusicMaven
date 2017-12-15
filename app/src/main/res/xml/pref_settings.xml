@@ -2,9 +2,11 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="账户信息">
         <Preference
+            android:key="USER_NAME"
             android:summary="吉格"
             android:title="昵称" />
         <Preference
+            android:key="USER_EMAIL"
             android:summary="1035363309@qq.com"
             android:title="邮箱" />
     </PreferenceCategory>

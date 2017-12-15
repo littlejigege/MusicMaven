@@ -1,24 +1,26 @@
-package com.qg.musicmaven.mainpage
+package com.qg.musicmaven.ui.mainpage
 
 
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.app.Fragment
 import android.view.Menu
+import android.view.MenuItem
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.TextView
 import com.miguelcatalan.materialsearchview.MaterialSearchView
+import com.mobile.utils.isConnected
 import com.qg.musicmaven.R
 import com.qg.musicmaven.base.BaseActivity
 import com.qg.musicmaven.cloudpage.CloudFragment
 import com.qg.musicmaven.dreampage.DreamFragment
 import com.qg.musicmaven.kugoupage.KugouFragment
+import com.qg.musicmaven.mainpage.MainPagePresenter
 import com.qg.musicmaven.modle.SearchAcitonCreator
 import com.qg.musicmaven.settingpage.SettingFragment
-import com.qg.musicmaven.ui.mainpage.MainPageContract
+import com.qg.musicmaven.ui.searchpage.SearchActivity
 import kotlinx.android.synthetic.main.activity_test_main.*
-import java.util.*
-import kotlin.concurrent.thread
+import org.jetbrains.anko.startActivity
 
 
 class TestMainActivity : BaseActivity(), MainPageContract.View {
@@ -37,10 +39,10 @@ class TestMainActivity : BaseActivity(), MainPageContract.View {
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
-            R.id.navigation_kugou -> {
-                presenter.onKugouClick()
-                return@OnNavigationItemSelectedListener true
-            }
+//            R.id.navigation_kugou -> {
+//                presenter.onKugouClick()
+//                return@OnNavigationItemSelectedListener true
+//            }
             R.id.navigation_cloud -> {
                 presenter.onCloudClick()
                 return@OnNavigationItemSelectedListener true
@@ -81,7 +83,7 @@ class TestMainActivity : BaseActivity(), MainPageContract.View {
         //toolbar标题做动画
         animateToolbar()
         //加载第一个显示的碎片
-        presenter.onKugouClick()
+        presenter.onCloudClick()
         initSearchView()
 
     }
@@ -129,9 +131,22 @@ class TestMainActivity : BaseActivity(), MainPageContract.View {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.test_main, menu)
-        searchViewMain.setMenuItem(menu!!.findItem(R.id.test_main_search))
+        //searchViewMain.setMenuItem(menu!!.findItem(R.id.test_main_search))
         //searchViewMain.setOnQueryTextListener(this)
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.test_main_search -> {
+                startActivity<SearchActivity>()
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
+        }
+
     }
 
 

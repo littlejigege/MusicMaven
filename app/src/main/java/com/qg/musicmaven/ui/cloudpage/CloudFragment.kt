@@ -6,7 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.qg.musicmaven.R
-import com.qg.musicmaven.mainpage.TestMainActivity
+import com.qg.musicmaven.ui.cloudpage.twopages.TwoPagesAdapter
+import com.qg.musicmaven.ui.mainpage.TestMainActivity
 import kotlinx.android.synthetic.main.frag_cloud.view.*
 
 /**

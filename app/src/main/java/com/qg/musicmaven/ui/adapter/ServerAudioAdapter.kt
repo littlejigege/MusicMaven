@@ -30,7 +30,7 @@ class ServerAudioAdapter(var data: MutableList<ServerAudio>, var ctx: Context) :
         with(audioInfo) {
             holder.itemView.audioName.text = songName.replace("<em>", "").replace("</em>", "")
             holder.itemView.singerName.text = singerName.replace("<em>", "").replace("</em>", "")
-            loadImg(audioInfo.imgUrl!!, holder.itemView.imageView)
+            loadImg(audioInfo.imgUrl, holder.itemView.imageView)
         }
 
     }
@@ -41,7 +41,7 @@ class ServerAudioAdapter(var data: MutableList<ServerAudio>, var ctx: Context) :
         return ViewHolder(itemView)
     }
 
-    private fun loadImg(url: String, imageView: ImageView) {
+    private fun loadImg(url: String?, imageView: ImageView) {
         Glide.with(ctx)
                 .load(url)
                 .apply(RequestOptions.circleCropTransform())

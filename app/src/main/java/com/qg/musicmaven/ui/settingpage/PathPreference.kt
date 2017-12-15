@@ -1,6 +1,7 @@
 package com.qg.musicmaven.settingpage
 
 import android.app.Activity
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.res.TypedArray
 import android.preference.Preference
@@ -37,7 +38,6 @@ class PathPreference : Preference {
     override fun onClick() {
         Permission.STORAGE.doAfterGet(context as Activity) {
             inUiThread {
-
                 val picker = FilePicker(context as Activity, (context as Activity).fragmentManager, FilePicker.PICK_PAHT)
                 picker.onFinish {
                     persistString(it[0])

@@ -5,11 +5,7 @@ import com.mobile.utils.preference
 import com.mobile.utils.toast
 import com.qg.musicmaven.modle.bean.ServerAudio
 import com.qiniu.android.http.ResponseInfo
-import com.qiniu.android.storage.Configuration
-import com.qiniu.android.storage.UpCompletionHandler
-import com.qiniu.android.storage.UpProgressHandler
-import com.qiniu.android.storage.UploadManager
-import com.qiniu.android.storage.UploadOptions
+import com.qiniu.android.storage.*
 import com.qiniu.common.Zone
 import com.qiniu.storage.BucketManager
 import com.qiniu.util.Auth
@@ -30,15 +26,15 @@ object QiNiu {
     private val upLoadManager: UploadManager = UploadManager(Configuration.Builder().build())
 
     //异步上传
-    fun upLoad(filePath: String, progressHandler: UpProgressHandler) {
-        upLoadManager.put(filePath, null, TOKEN, { key, info, _ ->
+    fun upLoad(filePath: String, progressHandler: UpProgressHandler,cancellationSignal: UpCancellationSignal) {
+        upLoadManager.put(filePath, filePath.substring(filePath.lastIndexOf("/") + 1), TOKEN, { key, info, _ ->
             if (!info.isOK) {
                 info.error.toast()
             } else {
-                "上传完毕".toast()
+
             }
 
-        }, UploadOptions(null, null, false, progressHandler, null))
+        }, UploadOptions(null, null, false, progressHandler, cancellationSignal))
     }
 
     @WorkerThread

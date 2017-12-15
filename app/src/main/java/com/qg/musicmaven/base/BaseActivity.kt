@@ -11,7 +11,7 @@ import com.qg.musicmaven.R
  * Created by jimji on 2017/9/9.
  */
 @SuppressLint("Registered")
-open class BaseActivity : PermissionCompatActivity() {
+open class BaseActivity : PermissionActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -1,11 +1,9 @@
-package com.qg.musicmaven.cloudpage
+package com.qg.musicmaven.ui.cloudpage.twopages
 
 import android.app.Fragment
 import android.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
-import android.support.v4.app.FragmentStatePagerAdapter
-import com.qg.musicmaven.cloudpage.twopages.MyAudioFragment
-import com.qg.musicmaven.cloudpage.twopages.ServerAudioFragment
+import com.qg.musicmaven.ui.cloudpage.twopages.MyAudioFragment
+import com.qg.musicmaven.ui.cloudpage.twopages.ServerAudioFragment
 
 /**
  * Created by jimiji on 2017/12/12.

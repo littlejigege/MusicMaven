@@ -48,6 +48,8 @@ class RLPresenter : AbsBasePresenter<RLContract.View>(), RLContract.Presenter {
                         TYPE_PREREGISTER ->
                             if (result.ifv_result.candidates[0].score > 90) {
                                 view.alreadyRegister()
+                            } else {
+                                register(bytes)
                             }
 
                         TYPE_LOGIN ->
@@ -92,8 +94,12 @@ class RLPresenter : AbsBasePresenter<RLContract.View>(), RLContract.Presenter {
         // 设置监听器，开始会话
         mIdVerifier.startWorking(object : IdentityListener {
             override fun onResult(p0: IdentityResult?, p1: Boolean) {
-                Log.e("RegisterActivity", "${p0?.getResultString()}  ${p1.toString()}")
-                addToGroup(uuid)
+                if (p1) {
+                    view.registerSuccess()
+                    Log.e("RegisterActivity", "${p0?.getResultString()}  ${p1.toString()}")
+                    addToGroup(uuid)
+                }
+
             }
 
             override fun onEvent(p0: Int, p1: Int, p2: Int, p3: Bundle?) {
@@ -125,8 +131,8 @@ class RLPresenter : AbsBasePresenter<RLContract.View>(), RLContract.Presenter {
         // cmd 为 操作，模型管理包括 query, delete, download，组管理包括 add，query，delete
         mIdVerifier.execute("ipt", cmd, params, object : IdentityListener {
             override fun onResult(p0: IdentityResult?, success: Boolean) {
-                if (success) {
-                    view.onError(RuntimeException("未知错误"))
+                if (!success) {
+                    view.onError(RuntimeException("加入组失败"))
                 }
             }
 

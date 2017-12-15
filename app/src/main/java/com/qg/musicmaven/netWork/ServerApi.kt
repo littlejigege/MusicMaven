@@ -1,8 +1,11 @@
 package com.qg.musicmaven.netWork
 
+import com.qg.musicmaven.App
 import com.qg.musicmaven.BuildConfig
 import com.qg.musicmaven.modle.bean.FeedBack
 import com.qg.musicmaven.modle.bean.ServerAudio
+import com.qg.musicmaven.modle.bean.Singer
+import com.qg.musicmaven.modle.bean.Wish
 import io.reactivex.Observable
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -13,23 +16,37 @@ import retrofit2.http.*
  * Created by jimji on 2017/9/14.
  */
 interface ServerApi {
-    @POST("http://120.77.38.183:8080/gaojiancheng.mavenmusic/user/login")
+    @POST("${App.SERVER_ADDRESS}/user/login")
     fun login(@Body body: RequestBody): Observable<FeedBack<Long>>
 
-    @GET("http://120.77.38.183:8080/gaojiancheng.mavenmusic/download/detail")
-    fun getsonglist(@Query("userId") id: Long): Observable<FeedBack<MutableList<ServerAudio>>>
+    @GET("${App.SERVER_ADDRESS}/download/detail")
+    fun getsonglist(@Query("userId") id: Long, @Query("pageNum") page: Int = 1, @Query("pageSize") count: Int = 10): Observable<FeedBack<MutableList<ServerAudio>>>
 
     @Headers("Content-Type: application/json", "Accept: application/json")
-    @POST("http://120.77.38.183:8080/gaojiancheng.mavenmusic/download/songs")
+    @POST("${App.SERVER_ADDRESS}/download/songs")
     fun postSong(@Body body: RequestBody): Observable<FeedBack<Int>>
 
     @Headers("Content-Type: application/json", "Accept: application/json")
-    @POST("http://120.77.38.183:8080/gaojiancheng.mavenmusic/user/register")
+    @POST("${App.SERVER_ADDRESS}/user/register")
     fun register(@Body body: RequestBody): Observable<FeedBack<Int>>
 
-    @GET("http://120.77.38.183:8080/gaojiancheng.mavenmusic/user/getcount")
+    @GET("${App.SERVER_ADDRESS}/user/getcount")
     fun getCode(@Query("userEmail") email: String): Call<ResponseBody>
 
-    @GET("http://120.77.38.183:8080/gaojiancheng.mavenmusic/update/version")
+    @GET("${App.SERVER_ADDRESS}/update/version")
     fun checkApk(@Query("versionCode") versionCode: Int = BuildConfig.VERSION_CODE): Observable<FeedBack<String>>
+
+    @GET("${App.SERVER_ADDRESS}/song/servermusic")
+    fun getSinger(@Query("pageNum") page: Int = 1, @Query("pageSize") count: Int = 10): Observable<FeedBack<MutableList<Singer>>>
+
+    @GET("${App.SERVER_ADDRESS}/song/servermusic")
+    fun getSingerSong(@Query("pageNum") page: Int = 1, @Query("singerName") singerName: String
+                      , @Query("pageSize") count: Int = 10): Observable<FeedBack<MutableList<ServerAudio>>>
+
+    @GET("${App.SERVER_ADDRESS}/song/wantlist")
+    fun getWishList(@Query("pageNum") page: Int = 1, @Query("pageSize") count: Int = 10): Observable<FeedBack<MutableList<Wish>>>
+
+    @Headers("Content-Type: application/json", "Accept: application/json")
+    @POST("${App.SERVER_ADDRESS}/song/achievedream")
+    fun achieveDream(@Body body: RequestBody): Observable<FeedBack<Int>>
 }

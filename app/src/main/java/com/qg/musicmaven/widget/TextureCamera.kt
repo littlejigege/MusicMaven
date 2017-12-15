@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.os.Environment
 import android.view.TextureView
+import com.mobile.utils.compressByQuality
 import com.mobile.utils.toBytes
 import kotlinx.coroutines.experimental.async
 import org.jetbrains.anko.doAsync
@@ -132,12 +133,12 @@ class TextureCamera : TextureView , TextureView.SurfaceTextureListener,Camera.Pr
 //            yuv.compressToJpeg(Rect(0, 0, width, height), 50, out)
 //            val bytes = out.toByteArray()
             doAsync {
-                detected?.invoke(getBitmap().toBytes(Bitmap.CompressFormat.JPEG,30))
+
+                detected?.invoke(compressByQuality(getBitmap(), (1024*1.5).toLong())!!.toBytes())
             }
 
 
         }
-
 
     }
 

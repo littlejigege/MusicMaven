@@ -2,6 +2,7 @@ package com.qg.musicmaven.netWork
 
 import com.qg.musicmaven.BuildConfig
 import com.qg.musicmaven.modle.bean.FeedBack
+import com.qg.musicmaven.modle.bean.RegisterBody
 import com.qg.musicmaven.modle.bean.ServerAudio
 import io.reactivex.Observable
 import okhttp3.RequestBody
@@ -24,7 +25,7 @@ interface ServerApi {
     fun postSong(@Body body: RequestBody): Observable<FeedBack<Int>>
 
     @Headers("Content-Type: application/json", "Accept: application/json")
-    @POST("http://120.77.38.183:8080/gaojiancheng.mavenmusic/user/register")
+    @POST("http://120.77.38.183:8080/gaojiancheng.mavenmusic/user/verify")
     fun register(@Body body: RequestBody): Observable<FeedBack<Int>>
 
     @GET("http://120.77.38.183:8080/gaojiancheng.mavenmusic/user/getcount")
@@ -32,4 +33,7 @@ interface ServerApi {
 
     @GET("http://120.77.38.183:8080/gaojiancheng.mavenmusic/update/version")
     fun checkApk(@Query("versionCode") versionCode: Int = BuildConfig.VERSION_CODE): Observable<FeedBack<String>>
+
+    @POST("http://120.77.38.183:8080/gaojiancheng.mavenmusic/user/register")
+    fun register(@Body body: RegisterBody):Observable<FeedBack<String>>
 }

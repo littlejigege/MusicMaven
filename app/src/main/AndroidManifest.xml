@@ -19,11 +19,7 @@
         <activity
             android:name=".mainpage.TestMainActivity"
             android:label="@string/title_activity_test_main" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <activity-alias
@@ -37,12 +33,15 @@
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"></activity>
 
-        <activity android:name=".rlogin.LoginSuccessActivity"/>
         <activity android:name=".rlogin.RegisterActivity" android:theme="@style/Translucent"/>
         <activity android:name=".rlogin.LoginActivity">
 
 
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
 
         </activity>
 

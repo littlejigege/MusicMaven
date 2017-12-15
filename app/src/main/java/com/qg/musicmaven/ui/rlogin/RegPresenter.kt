@@ -4,28 +4,39 @@ import android.os.Bundle
 import android.util.Log
 import com.google.gson.Gson
 import com.iflytek.cloud.*
-import com.iflytek.speech.VerifierResult
 import com.qg.musicmaven.App
 import com.qg.musicmaven.base.AbsBasePresenter
+import com.qg.musicmaven.modle.bean.RegisterBody
 import com.qg.musicmaven.modle.bean.VerifyResult
+import com.qg.musicmaven.utils.Fetcher
 import java.util.*
 
 /**
  * Created by steve on 17-12-12.
  */
-class RLPresenter : AbsBasePresenter<RLContract.View>(), RLContract.Presenter {
+class RegPresenter : AbsBasePresenter<RegContract.View>(), RegContract.Presenter {
 
+    val fetcher = Fetcher()
     private val GROUP_ID = "3622740854"
 
-    companion object {
-        //注册前想看看有没有重复的,防止重复注册
-        val TYPE_PREREGISTER = 1;
+    override fun normalregister(method : String , email: String, password: String, count: String,faceId:String) {
+        fetcher.fetchIO(App.serverApi.register(RegisterBody(method,
+                RegisterBody.Data("mavenUser${System.currentTimeMillis()}", email, password, count, faceId))),
+                onNext = { feedBack ->
 
-        //真正的注册
-        val TYPE_LOGIN = 2;
+                    when(feedBack.status){
+                        1-> view.registerSuccess()
+                        400 ->  view.alreadyRegister(faceId)
+                        50 -> view.onError(RuntimeException("参数错误"))
+                        else -> view.onError(RuntimeException("建成奇奇怪怪的异常"+feedBack.toString()))
+
+                    }
+
+                },onError = { e -> view.onError(e)})
+
     }
 
-    override fun verify(bytes: ByteArray, type: Int) {
+    override fun register(bytes: ByteArray) {
 
         // 指定组id，最相似结果数
         val params = "group_id=" + GROUP_ID
@@ -44,19 +55,13 @@ class RLPresenter : AbsBasePresenter<RLContract.View>(), RLContract.Presenter {
                 if (success) {
 
                     val result = Gson().fromJson(p0?.getResultString(), VerifyResult::class.java)
-                    when (type) {
-                        TYPE_PREREGISTER ->
-                            if (result.ifv_result.candidates[0].score > 90) {
-                                view.alreadyRegister()
-                            }
-
-                        TYPE_LOGIN ->
-                            if (result.ifv_result.candidates[0].score > 90) {
-                                view.loginSuccess(result.ifv_result.candidates[0])
-                            } else {
-                                view.loginFailed()
-                            }
+                    if (result.ifv_result.candidates[0].score > 90) {
+                        Log.e("RegPresenter normal",result.toString())
+                        normalregister("1","","","",faceId = result.ifv_result.candidates[0].uuid)
+                    } else {
+                        reg(bytes)
                     }
+
                 } else {
                     view.onError(RuntimeException("未知错误"))
                 }
@@ -77,7 +82,7 @@ class RLPresenter : AbsBasePresenter<RLContract.View>(), RLContract.Presenter {
         mIdVerifier.stopWrite("ifr");
     }
 
-    override fun register(bytes: ByteArray) {
+    private fun reg(bytes: ByteArray) {
 
         val uuid = UUID.randomUUID().toString().replace("-", "")
         Log.e("UUID", uuid)
@@ -92,16 +97,16 @@ class RLPresenter : AbsBasePresenter<RLContract.View>(), RLContract.Presenter {
         // 设置监听器，开始会话
         mIdVerifier.startWorking(object : IdentityListener {
             override fun onResult(p0: IdentityResult?, p1: Boolean) {
-                Log.e("RegisterActivity", "${p0?.getResultString()}  ${p1.toString()}")
-                addToGroup(uuid)
+                if (p1) {
+                    addToGroup(uuid)
+                }
             }
 
             override fun onEvent(p0: Int, p1: Int, p2: Int, p3: Bundle?) {
-                Log.e("RegisterActivity", "event $p0  $p1  $p2 ")
             }
 
             override fun onError(p0: SpeechError?) {
-                Log.e("RegisterActivity", "Error " + p0?.printStackTrace())
+                view.onError(p0!!)
             }
 
         });
@@ -118,15 +123,19 @@ class RLPresenter : AbsBasePresenter<RLContract.View>(), RLContract.Presenter {
         // params 根据不同的操作而不同
 
         //创建组
-        val params = "scope=person,group_id=" + "3622740854" + ",auth_id=" + uuid;
+        val params = "scope=person,group_id=" + GROUP_ID + ",auth_id=" + uuid;
         val cmd = "add";
 
 
         // cmd 为 操作，模型管理包括 query, delete, download，组管理包括 add，query，delete
         mIdVerifier.execute("ipt", cmd, params, object : IdentityListener {
             override fun onResult(p0: IdentityResult?, success: Boolean) {
-                if (success) {
-                    view.onError(RuntimeException("未知错误"))
+                Log.e("RegPresenteraddtogroup",p0?.resultString)
+                if (!success) {
+                    view.onError(RuntimeException("加入组失败"))
+                } else {
+                    //服务器注册成功
+                    normalregister("1",faceId = uuid)
                 }
             }
 
@@ -161,11 +170,9 @@ class RLPresenter : AbsBasePresenter<RLContract.View>(), RLContract.Presenter {
             }
 
             override fun onEvent(p0: Int, p1: Int, p2: Int, p3: Bundle?) {
-                Log.e("RegisterActivity", "event $p0  $p1  $p2 ")
             }
 
             override fun onError(p0: SpeechError?) {
-                Log.e("RegisterActivity", "Error  " + p0?.printStackTrace())
             }
 
         });

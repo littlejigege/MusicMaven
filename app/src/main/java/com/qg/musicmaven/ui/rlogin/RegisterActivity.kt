@@ -2,8 +2,10 @@ package com.qg.musicmaven.rlogin
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.app.ActivityOptionsCompat
 import android.transition.Transition
 import android.transition.TransitionInflater
 import android.view.View
@@ -13,33 +15,31 @@ import com.qg.musicmaven.base.BaseActivity
 import com.qg.musicmaven.R
 import kotlinx.android.synthetic.main.activity_register.*
 import com.mobile.utils.toggleVisibility
+import com.qg.musicmaven.App
+import com.qg.musicmaven.mainpage.TestMainActivity
 import com.qg.musicmaven.modle.bean.VerifyResult
 import org.jetbrains.anko.toast
 
 
-class RegisterActivity : BaseActivity(), RLContract.View {
-    override fun alreadyRegister() {
+class RegisterActivity : BaseActivity(), RegContract.View {
+    override fun alreadyRegister(uuid:String) {
         toast("已注册过")
+        App.uuid = uuid
+        val oc2 = ActivityOptionsCompat.makeSceneTransitionAnimation(this)
+        val i2 = Intent(this, TestMainActivity::class.java)
+        startActivity(i2, oc2.toBundle())
     }
 
     override fun registerSuccess() {
         toast("注册成功")
     }
 
-    override fun loginSuccess(user: VerifyResult.Candidate) {
-        toast("登录成功")
-    }
-
-    override fun loginFailed() {
-        toast("登录失败")
-    }
-
     override fun onError(e: Throwable) {
         toast(e.toString())
     }
 
-    val mPresenter: RLContract.Presenter by lazy {
-        val presenter = RLPresenter()
+    val mPresenter: RegContract.Presenter by lazy {
+        val presenter = RegPresenter()
         presenter.takeView(this)
         presenter
     }
@@ -68,7 +68,7 @@ class RegisterActivity : BaseActivity(), RLContract.View {
 
         camera.onFaceDetected { bytes ->
 
-            mPresenter.verify(bytes,RLPresenter.TYPE_PREREGISTER)
+            mPresenter.register(bytes)
 
         }
 

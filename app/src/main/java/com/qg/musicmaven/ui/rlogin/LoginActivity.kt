@@ -14,6 +14,7 @@ import android.widget.Button
 import android.widget.EditText
 
 import com.qg.musicmaven.R
+import com.qg.musicmaven.mainpage.TestMainActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class LoginActivity : AppCompatActivity() , View.OnClickListener {
@@ -48,7 +49,7 @@ class LoginActivity : AppCompatActivity() , View.OnClickListener {
                 window.exitTransition = explode
                 window.enterTransition = explode
                 val oc2 = ActivityOptionsCompat.makeSceneTransitionAnimation(this)
-                val i2 = Intent(this, LoginSuccessActivity::class.java)
+                val i2 = Intent(this, TestMainActivity::class.java)
                 startActivity(i2, oc2.toBundle())
             }
         }

@@ -55,6 +55,7 @@ class App : Application() {
                 }
                 return path
             }
+        var uuid: String? = null
     }
 
     override fun onCreate() {

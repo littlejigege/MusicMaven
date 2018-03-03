@@ -26,10 +26,10 @@ object QiNiu {
     private val upLoadManager: UploadManager = UploadManager(Configuration.Builder().build())
 
     //异步上传
-    fun upLoad(filePath: String, progressHandler: UpProgressHandler,cancellationSignal: UpCancellationSignal) {
+    fun upLoad(filePath: String, progressHandler: UpProgressHandler, cancellationSignal: UpCancellationSignal) {
         upLoadManager.put(filePath, filePath.substring(filePath.lastIndexOf("/") + 1), TOKEN, { key, info, _ ->
             if (!info.isOK) {
-                info.error.toast()
+                println(info)
             } else {
 
             }

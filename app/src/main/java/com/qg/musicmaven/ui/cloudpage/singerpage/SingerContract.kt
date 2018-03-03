@@ -11,7 +11,7 @@ import com.qg.musicmaven.modle.bean.ServerAudio
 interface SingerContract {
     interface View : BaseView {
         fun onGetAudio(list: MutableList<ServerAudio>)
-
+        fun loadMoreDone(list: MutableList<ServerAudio>)
     }
 
 }

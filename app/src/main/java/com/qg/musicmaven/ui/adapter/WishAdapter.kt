@@ -20,8 +20,8 @@ class WishAdapter(val data: MutableList<Wish>, val ctx: Context) : RecyclerView.
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         with(data[position]) {
-            holder.itemView.textViewAudioName.text = "歌手：$songName"
-            holder.itemView.textViewSingerNameOfWish.text = "歌名：$singerName"
+            holder.itemView.textViewAudioName.text = "歌名：$songName"
+            holder.itemView.textViewSingerNameOfWish.text = "歌手：$singerName"
         }
     }
 

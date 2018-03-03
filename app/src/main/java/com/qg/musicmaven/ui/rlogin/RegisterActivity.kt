@@ -13,26 +13,30 @@ import android.util.Log
 import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.animation.AccelerateInterpolator
+import com.mobile.utils.md5
+import com.mobile.utils.onClick
+import com.mobile.utils.showToast
 import com.qg.musicmaven.base.BaseActivity
 import com.qg.musicmaven.R
 import kotlinx.android.synthetic.main.activity_register.*
 import com.mobile.utils.toggleVisibility
 import com.qg.musicmaven.App
-import com.qg.musicmaven.mainpage.TestMainActivity
+import com.qg.musicmaven.ui.mainpage.TestMainActivity
 import com.qg.musicmaven.modle.bean.VerifyResult
 import org.jetbrains.anko.custom.onUiThread
 import org.jetbrains.anko.indeterminateProgressDialog
 import org.jetbrains.anko.progressDialog
+import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.toast
 
 
 class RegisterActivity : BaseActivity(), RegContract.View {
 
-    var isLogin : Int = 0
+    var isLogin: Int = 0
 
     private var detecting = false
 
-    override fun alreadyRegister(uuid:String) {
+    override fun alreadyRegister(uuid: String) {
         toast("已注册过")
         App.uuid = uuid
         val oc2 = ActivityOptionsCompat.makeSceneTransitionAnimation(this)
@@ -49,10 +53,10 @@ class RegisterActivity : BaseActivity(), RegContract.View {
     }
 
     override fun onError(e: Throwable) {
-        toast("请对准摄像机并检查网络连接状态")
+        showToast(e)
         dialog?.dismiss()
         detecting = false
-        camera.hasTake = false
+
 
     }
 
@@ -62,65 +66,43 @@ class RegisterActivity : BaseActivity(), RegContract.View {
         presenter
     }
 
-    var dialog : ProgressDialog? = null
+    var dialog: ProgressDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        
-        isLogin = intent.getIntExtra("login",0)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
+        isLogin = intent.getIntExtra("login", 0)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ShowEnterAnimation()
         }
-
-        if(isLogin == 1){
+        if (isLogin == 1) {
             fab.visibility = View.GONE
             take.animate().x(cv_add.right.toFloat() + take.width).alpha(1f).setDuration(800).start()
             normal.visibility = View.GONE
         }
 
         fab!!.setOnClickListener { animateRevealClose() }
-
-        normal.setOnClickListener {
-            animatedcancleCamera()
-        }
-
-        take.setOnClickListener {
-            if(!detecting) {
-                camera.hasTake = false
-                camera.takePhotoAnyWay()
-            }
-        }
-
-        camera.onFaceDetected { bytes ->
-
-            mPresenter.register(bytes)
-            detecting = true
-        }
-
-        camera.onstartTake {
-            if (dialog != null) {
-                dialog?.show()
+        bt_getCode.setOnClickListener {
+            if (et_email.text.toString().isEmpty()) {
+                et_email.requestFocus()
             } else {
-                dialog = indeterminateProgressDialog("识别中")
+                showToast("验证码已发送")
+                mPresenter.getCode(et_email.text.toString())
             }
         }
-
-        bt_go.setOnClickListener{
+        bt_go.setOnClickListener {
             val pass = et_password.text.toString()
             val rpass = et_repeatpassword.text.toString()
             val user = et_username.text.toString()
             val verify = count.text.toString()
 
-            if(pass.isBlank()) et_password.requestFocus()
-            if(rpass.isBlank()) et_repeatpassword.requestFocus()
-            if(user.isBlank()) et_username.requestFocus()
-            if(verify.isBlank()) count.requestFocus()
-
-            if(pass.isNotBlank() && rpass.isNotBlank() && user.isNotBlank() && verify.isNotBlank()){
-                mPresenter.normalregister("2",user,pass,verify)
+            if (pass.isBlank()) et_password.requestFocus()
+            if (rpass.isBlank()) et_repeatpassword.requestFocus()
+            if (user.isBlank()) et_username.requestFocus()
+            if (verify.isBlank()) count.requestFocus()
+            if (pass.isNotBlank() && rpass.isNotBlank() && user.isNotBlank() && verify.isNotBlank()) {
+                mPresenter.normalregister("2", et_email.text.toString(), pass.md5(), verify)
             }
 
         }
@@ -130,7 +112,7 @@ class RegisterActivity : BaseActivity(), RegContract.View {
 
     override fun onResume() {
         super.onResume()
-        camera.hasTake = false
+
     }
 
     private fun ShowEnterAnimation() {
@@ -163,29 +145,6 @@ class RegisterActivity : BaseActivity(), RegContract.View {
         })
     }
 
-    fun animatedcancleCamera() {
-
-        take.animate().setDuration(300).x(-camera.width.toFloat()).start()
-
-        camera.animate().setDuration(300).x(-camera.width.toFloat()).setListener(object : Animator.AnimatorListener {
-            override fun onAnimationRepeat(animation: Animator?) {
-            }
-
-            override fun onAnimationCancel(animation: Animator?) {
-            }
-
-            override fun onAnimationStart(animation: Animator?) {
-            }
-
-            override fun onAnimationEnd(animation: Animator?) {
-                normal.toggleVisibility()
-                take.toggleVisibility()
-                camera.toggleVisibility()
-            }
-
-        }).start()
-
-    }
 
     fun animateRevealShow() {
         val mAnimator = ViewAnimationUtils.createCircularReveal(cv_add, cv_add!!.width / 2, 0, (fab!!.width / 2).toFloat(), cv_add!!.height.toFloat())
@@ -225,9 +184,9 @@ class RegisterActivity : BaseActivity(), RegContract.View {
     }
 
     override fun onBackPressed() {
-        if(isLogin !=1) {
+        if (isLogin != 1) {
             animateRevealClose()
-        }else{
+        } else {
             super.onBackPressed()
         }
     }

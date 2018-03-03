@@ -10,5 +10,6 @@ interface MAContract {
     interface View : BaseView {
         fun loadMoreDone(list: MutableList<ServerAudio>)
         fun reFreshDone(list: MutableList<ServerAudio>)
+        fun onNotLogin()
     }
 }

@@ -4,45 +4,45 @@ package com.qg.musicmaven.ui.mainpage
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.app.Fragment
+import android.content.Intent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.TextView
 import com.miguelcatalan.materialsearchview.MaterialSearchView
 import com.mobile.utils.isConnected
+import com.qg.musicmaven.MyMusicService
 import com.qg.musicmaven.R
 import com.qg.musicmaven.base.BaseActivity
 import com.qg.musicmaven.cloudpage.CloudFragment
 import com.qg.musicmaven.dreampage.DreamFragment
-import com.qg.musicmaven.kugoupage.KugouFragment
+
 import com.qg.musicmaven.mainpage.MainPagePresenter
-import com.qg.musicmaven.modle.SearchAcitonCreator
+
 import com.qg.musicmaven.settingpage.SettingFragment
 import com.qg.musicmaven.ui.searchpage.SearchActivity
+import com.qg.musicmaven.widget.UploadDialog
 import kotlinx.android.synthetic.main.activity_test_main.*
 import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.startService
 
 
 class TestMainActivity : BaseActivity(), MainPageContract.View {
 
+
     //默认为酷狗碎片
     companion object {
-        var fragMentShowingTag = KugouFragment.TAG
+        var fragMentShowingTag = CloudFragment.TAG
     }
 
     private val presenter by lazy { MainPagePresenter() }
     //四个碎片
-    private val kugouFragment by lazy { KugouFragment() }
     private val cloudFragment by lazy { CloudFragment() }
     private val dreamFragment by lazy { DreamFragment() }
     private val settingFragment by lazy { SettingFragment() }
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
-//            R.id.navigation_kugou -> {
-//                presenter.onKugouClick()
-//                return@OnNavigationItemSelectedListener true
-//            }
             R.id.navigation_cloud -> {
                 presenter.onCloudClick()
                 return@OnNavigationItemSelectedListener true
@@ -84,50 +84,11 @@ class TestMainActivity : BaseActivity(), MainPageContract.View {
         animateToolbar()
         //加载第一个显示的碎片
         presenter.onCloudClick()
-        initSearchView()
-
+        //请求公告
+        presenter.requestNotice()
+        startService(Intent(this, MyMusicService::class.java))
     }
 
-    /**
-     * 初始化搜索框
-     */
-    private fun initSearchView() {
-        searchViewMain.setOnQueryTextListener(object : MaterialSearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String): Boolean {
-                if (fragMentShowingTag == KugouFragment.TAG) {
-                    searchViewMain.closeSearch()
-                    kugouFragment.showSearching()
-                    SearchAcitonCreator.searchFromKugou(query, 1) {
-                        kugouFragment.setAudioList(query, it)
-                    }
-                }
-
-                return true
-            }
-
-            override fun onQueryTextChange(newText: String): Boolean {
-                //当在酷狗中搜索时才需要建议
-                if (fragMentShowingTag == KugouFragment.TAG) {
-                    //如果关键字不为空就获取建议
-                    if (newText.isNotEmpty()) {
-                        //先取消再搜索，保证不会错位
-                        SearchAcitonCreator.cancelSuggestion()
-                        SearchAcitonCreator.getSuggestionFromKugou(newText) {
-                            searchViewMain.setSuggestions(it.toTypedArray())
-                            //不想保留建议所以没死都重新设置监听器
-                            searchViewMain.setOnItemClickListener { _, _, position, _ ->
-                                searchViewMain.setQuery(it[position], true)
-                                searchViewMain.closeSearch()
-                            }
-                        }
-                    }
-                }
-
-                return true
-            }
-        })
-
-    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.test_main, menu)
@@ -140,6 +101,10 @@ class TestMainActivity : BaseActivity(), MainPageContract.View {
         return when (item.itemId) {
             R.id.test_main_search -> {
                 startActivity<SearchActivity>()
+                true
+            }
+            R.id.test_main_upload -> {
+                UploadDialog().show(fragmentManager, "")
                 true
             }
             else -> {
@@ -162,10 +127,6 @@ class TestMainActivity : BaseActivity(), MainPageContract.View {
     }
 
 
-    override fun openKugouPage() {
-        replaceFragment(kugouFragment)
-    }
-
     override fun openCloudPage() {
         replaceFragment(cloudFragment)
     }
@@ -176,5 +137,9 @@ class TestMainActivity : BaseActivity(), MainPageContract.View {
 
     override fun openSettingPage() {
         replaceFragment(settingFragment)
+    }
+
+    override fun onNoticeGet(notice: String?) {
+        runTextView.text = notice
     }
 }

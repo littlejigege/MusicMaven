@@ -10,13 +10,20 @@ import com.mobile.utils.showToast
 import com.qg.musicmaven.R
 import com.qg.musicmaven.modle.bean.ServerAudio
 import com.qg.musicmaven.ui.adapter.ServerAudioAdapter
+import com.qg.musicmaven.ui.rlogin.LoginActivity
 import kotlinx.android.synthetic.main.frag_my_audio.view.*
 import kotlinx.android.synthetic.main.frag_server_audio.view.*
+import org.jetbrains.anko.startActivity
 
 /**
  * Created by jimiji on 2017/12/12.
  */
 class MyAudioFragment : Fragment(), MAContract.View {
+    override fun onNotLogin() {
+        //startActivity<LoginActivity>()
+        showToast("未登录")
+    }
+
     override fun reFreshDone(list: MutableList<ServerAudio>) {
         if (activity != null) {
             rootView?.reFreshLayoutMyAudio.finishRefresh(1)
@@ -48,7 +55,7 @@ class MyAudioFragment : Fragment(), MAContract.View {
         rootView = inflater.inflate(R.layout.frag_my_audio, container, false)
         rootView?.reFreshLayoutMyAudio?.setOnLoadmoreListener { presenter.loadMore() }
         rootView?.reFreshLayoutMyAudio?.setOnRefreshListener { presenter.reFresh() }
-        //presenter.reFresh()
+        presenter.reFresh()
         return rootView
     }
 }

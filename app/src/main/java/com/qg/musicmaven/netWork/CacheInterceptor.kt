@@ -16,10 +16,9 @@ class CacheInterceptor : Interceptor {
         val response: Response
         val response2: Response
         if (isConnected()) {
-            println(6666)
+            println(request)
             response = chain.proceed(request)
             val cacheControl = CacheControl.Builder()
-                    .maxAge(30, TimeUnit.SECONDS)
                     .build()
                     .toString()
             response2 = response.newBuilder()

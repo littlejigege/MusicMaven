@@ -8,13 +8,13 @@ import com.qg.musicmaven.base.BaseView;
 
 public interface MainPageContract {
     interface View extends BaseView {
-        void openKugouPage();
 
         void openCloudPage();
 
         void openDreamPage();
 
         void openSettingPage();
+        void onNoticeGet(String notice);
     }
 
 

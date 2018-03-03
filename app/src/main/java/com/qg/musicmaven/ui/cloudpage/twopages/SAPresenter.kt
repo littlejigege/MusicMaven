@@ -25,7 +25,7 @@ class SAPresenter : AbsBasePresenter<SAContract.View>() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe (object : Observer<FeedBack<MutableList<Singer>>> {
                     override fun onError(e: Throwable?) {
-                        println(e)
+                        e?.printStackTrace()
                     }
 
                     override fun onComplete() {
@@ -50,7 +50,7 @@ class SAPresenter : AbsBasePresenter<SAContract.View>() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : Observer<FeedBack<MutableList<Singer>>> {
                     override fun onError(e: Throwable?) {
-                        println(e)
+                        e?.printStackTrace()
                     }
 
                     override fun onComplete() {

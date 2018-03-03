@@ -18,21 +18,24 @@ class RegPresenter : AbsBasePresenter<RegContract.View>(), RegContract.Presenter
 
     val fetcher = Fetcher()
     private val GROUP_ID = "3622740854"
+    override fun getCode(email: String) {
+        fetcher.fetchIO(App.serverApi.getCode(email))
+    }
 
-    override fun normalregister(method : String , email: String, password: String, count: String,faceId:String) {
+    override fun normalregister(method: String, email: String, password: String, count: String, faceId: String) {
         fetcher.fetchIO(App.serverApi.register(RegisterBody(method,
                 RegisterBody.Data("mavenUser${System.currentTimeMillis()}", email, password, count, faceId))),
                 onNext = { feedBack ->
 
-                    when(feedBack.status){
-                        1-> view.registerSuccess()
-                        400 ->  view.alreadyRegister(faceId)
+                    when (feedBack.status) {
+                        1 -> view.registerSuccess()
+                        400 -> view.alreadyRegister(faceId)
                         50 -> view.onError(RuntimeException("参数错误"))
-                        else -> view.onError(RuntimeException("建成奇奇怪怪的异常"+feedBack.toString()))
+                        else -> view.onError(RuntimeException("建成奇奇怪怪的异常" + feedBack.toString()))
 
                     }
 
-                },onError = { e -> view.onError(e)})
+                }, onError = { e -> view.onError(e) })
 
     }
 
@@ -56,8 +59,8 @@ class RegPresenter : AbsBasePresenter<RegContract.View>(), RegContract.Presenter
 
                     val result = Gson().fromJson(p0?.getResultString(), VerifyResult::class.java)
                     if (result.ifv_result.candidates[0].score > 90) {
-                        Log.e("RegPresenter normal",result.toString())
-                        normalregister("1","","","",faceId = result.ifv_result.candidates[0].uuid)
+                        Log.e("RegPresenter normal", result.toString())
+                        normalregister("1", "", "", "", faceId = result.ifv_result.candidates[0].uuid)
                     } else {
                         reg(bytes)
                     }
@@ -130,12 +133,12 @@ class RegPresenter : AbsBasePresenter<RegContract.View>(), RegContract.Presenter
         // cmd 为 操作，模型管理包括 query, delete, download，组管理包括 add，query，delete
         mIdVerifier.execute("ipt", cmd, params, object : IdentityListener {
             override fun onResult(p0: IdentityResult?, success: Boolean) {
-                Log.e("RegPresenteraddtogroup",p0?.resultString)
+                Log.e("RegPresenteraddtogroup", p0?.resultString)
                 if (!success) {
                     view.onError(RuntimeException("加入组失败"))
                 } else {
                     //服务器注册成功
-                    normalregister("1",faceId = uuid)
+                    normalregister("1", faceId = uuid)
                 }
             }
 

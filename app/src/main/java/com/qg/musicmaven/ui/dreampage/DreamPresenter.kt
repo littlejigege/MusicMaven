@@ -20,6 +20,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import okhttp3.MediaType
 import okhttp3.RequestBody
+import java.net.URL
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -32,7 +33,7 @@ class DreamPresenter : AbsBasePresenter<DreamContract.View>() {
             showToast("请先登陆")
             return
         }
-        App.serverApi.getWishList(pageNext.getAndIncrement())
+        App.serverApi.getWishList(page = pageNext.getAndIncrement())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : Observer<FeedBack<MutableList<Wish>>> {
@@ -49,7 +50,7 @@ class DreamPresenter : AbsBasePresenter<DreamContract.View>() {
                     }
 
                     override fun onError(e: Throwable?) {
-                        println(e)
+                        e?.printStackTrace()
                     }
                 })
     }
@@ -77,7 +78,7 @@ class DreamPresenter : AbsBasePresenter<DreamContract.View>() {
                     }
 
                     override fun onError(e: Throwable?) {
-                        println(e)
+                        e?.printStackTrace()
                     }
                 })
 
@@ -88,7 +89,7 @@ class DreamPresenter : AbsBasePresenter<DreamContract.View>() {
         App.serverApi.achieveDream(RequestBody.create(MediaType.parse("application/json"), JsonMaker.make {
             objects {
                 "wishId" - wish.wishId
-                "songURL" - "${App.QIQUI_ADDRESS}$songKey"
+                "songURL" - "${App.QIQUI_ADDRESS}/$songKey"
             }
         })).subscribeOn(Schedulers.io())
                 .subscribe(object : Observer<FeedBack<Int>?> {
@@ -105,10 +106,11 @@ class DreamPresenter : AbsBasePresenter<DreamContract.View>() {
                     }
 
                     override fun onError(e: Throwable?) {
-                        println(e)
+                        e?.printStackTrace()
                     }
                 })
     }
+
 
     fun uploadSong(filePath: String, wish: Wish) {
         val dialog = UpLoadProgressDialog(view as Activity)

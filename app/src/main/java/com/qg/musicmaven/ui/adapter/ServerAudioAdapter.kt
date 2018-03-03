@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.qg.musicmaven.App
 import com.qg.musicmaven.R
 import com.qg.musicmaven.modle.bean.ServerAudio
 import kotlinx.android.synthetic.main.audio_item.view.*
@@ -42,11 +43,16 @@ class ServerAudioAdapter(var data: MutableList<ServerAudio>, var ctx: Context) :
     }
 
     private fun loadImg(url: String?, imageView: ImageView) {
-        Glide.with(ctx)
-                .load(url)
-                .apply(RequestOptions.circleCropTransform())
-                .apply(RequestOptions.placeholderOf(R.drawable.ic_music))
-                .into(imageView)
+        if (App.isNoPic) {
+            //无图模式
+            imageView.setImageResource(R.drawable.ic_music)
+        } else {
+            Glide.with(ctx)
+                    .load(url)
+                    .apply(RequestOptions.circleCropTransform())
+                    .apply(RequestOptions.placeholderOf(R.drawable.ic_music))
+                    .into(imageView)
+        }
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

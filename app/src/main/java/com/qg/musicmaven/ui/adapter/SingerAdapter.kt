@@ -1,5 +1,6 @@
 package com.qg.musicmaven.ui.adapter
 
+import android.app.Activity
 import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import android.widget.ImageView
 import android.widget.SearchView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.qg.musicmaven.App
 import com.qg.musicmaven.R
 import com.qg.musicmaven.modle.bean.Singer
 import com.qg.musicmaven.ui.cloudpage.singerpage.SingerActivity
@@ -23,7 +25,7 @@ class SingerAdapter(val data: MutableList<Singer>, val ctx: Context) : RecyclerV
         val holder = ViewHolder(itemView)
         //点击启动歌手页面
         itemView.cardViewSinger.setOnClickListener {
-            SingerActivity.withSinger(data[holder.adapterPosition])
+            SingerActivity.withSinger(data[holder.adapterPosition], holder.itemView.imageViewSinger, ctx as Activity)
         }
         return holder
     }
@@ -38,10 +40,16 @@ class SingerAdapter(val data: MutableList<Singer>, val ctx: Context) : RecyclerV
     override fun getItemCount() = data.size
 
     private fun loadImg(url: String, imageView: ImageView) {
-        Glide.with(ctx)
-                .load(url)
-                .apply(RequestOptions.placeholderOf(R.drawable.ic_singer_gray))
-                .into(imageView)
+        if (App.isNoPic) {
+            //无图模式
+            imageView.setImageResource(R.drawable.ic_singer_gray)
+        } else {
+            Glide.with(ctx)
+                    .load(url)
+                    .apply(RequestOptions.placeholderOf(R.drawable.ic_singer_gray))
+                    .into(imageView)
+        }
+
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)

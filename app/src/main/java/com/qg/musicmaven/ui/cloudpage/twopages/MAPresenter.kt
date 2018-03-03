@@ -19,16 +19,15 @@ class MAPresenter : AbsBasePresenter<MAContract.View>() {
     private val pageNext = AtomicInteger(2)
     fun loadMore() {
         if (!App.instance.hasUser()) {
-            showToast("请先登陆")
+            view?.onNotLogin()
             return
         }
-
-        App.serverApi.getsonglist(App.instance.getUser()?.customerId?.toLong() ?: 0, pageNext.getAndIncrement())
+        App.serverApi.getsonglist(App.instance.getUser()?.userId?.toLong() ?: 0, pageNext.getAndIncrement())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe (object : Observer<FeedBack<MutableList<ServerAudio>>> {
+                .subscribe(object : Observer<FeedBack<MutableList<ServerAudio>>> {
                     override fun onError(e: Throwable?) {
-                        println(e)
+                        e?.printStackTrace()
                     }
 
                     override fun onSubscribe(d: Disposable?) {
@@ -47,17 +46,17 @@ class MAPresenter : AbsBasePresenter<MAContract.View>() {
 
     fun reFresh() {
         if (!App.instance.hasUser()) {
-            showToast("请先登陆")
+            view?.onNotLogin()
             return
         }
 
         pageNext.set(2)//重置
-        App.serverApi.getsonglist(App.instance.getUser()?.customerId?.toLong() ?: 0)
+        App.serverApi.getsonglist(App.instance.getUser()?.userId?.toLong() ?: 0)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : Observer<FeedBack<MutableList<ServerAudio>>> {
                     override fun onError(e: Throwable?) {
-                        println(e)
+                        e?.printStackTrace()
                     }
 
                     override fun onSubscribe(d: Disposable?) {

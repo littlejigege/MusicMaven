@@ -13,7 +13,7 @@ import org.jetbrains.anko.Android
  */
 
 
-class Fetcher  constructor() {
+class Fetcher constructor() {
 
     enum class Type {
         NEW, IO, MAIN
@@ -32,7 +32,7 @@ class Fetcher  constructor() {
 
     fun <T> fetchIO(source: Observable<T>,
                     onNext: (T) -> Unit = {},
-                    onError: (Throwable) -> Unit = {},
+                    onError: (Throwable) -> Unit = { it.printStackTrace() },
                     onComplete: () -> Unit = {},
                     onSubscribe: (Disposable) -> Unit = {}) {
 
@@ -84,9 +84,9 @@ class Fetcher  constructor() {
                     subscribe(onNext, onError, onComplete, onSubscribe)
 
     fun <T> Observable<T>.fetchComputation(onNext: (T) -> Unit = {},
-                                          onError: (Throwable) -> Unit = {},
-                                          onComplete: () -> Unit = {},
-                                          onSubscribe: (Disposable) -> Unit = {}): Disposable? =
+                                           onError: (Throwable) -> Unit = {},
+                                           onComplete: () -> Unit = {},
+                                           onSubscribe: (Disposable) -> Unit = {}): Disposable? =
             subscribeOn(Schedulers.computation()).
                     observeOn(AndroidSchedulers.mainThread()).
                     subscribe(onNext, onError, onComplete, onSubscribe)

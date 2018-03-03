@@ -4,6 +4,11 @@
     <item
         android:id="@+id/test_main_search"
         android:icon="@drawable/ic_search_white_24dp"
-        android:title="@string/search"
-        android:showAsAction="always" />
+        android:showAsAction="always"
+        android:title="@string/search" />
+    <item
+        android:id="@+id/test_main_upload"
+        android:icon="@android:drawable/stat_sys_upload_done"
+        android:showAsAction="always"
+        android:title="上传" />
 </menu>

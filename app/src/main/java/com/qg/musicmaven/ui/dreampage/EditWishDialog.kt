@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.dialog_edit_wish.view.*
  */
 class EditWishDialog(ctx: Context, val action: (Wish) -> Unit) : View.OnClickListener {
     override fun onClick(v: View?) {
-        if (wish.albumName.isNotEmpty() && wish.singerName.isNotEmpty() && wish.songName.isNotEmpty()) {
+        if (wish.singerName.isNotEmpty() && wish.songName.isNotEmpty()) {
             dialog.dismiss()
             action(wish)
         } else {
@@ -33,7 +33,7 @@ class EditWishDialog(ctx: Context, val action: (Wish) -> Unit) : View.OnClickLis
         //监听三个输入框变化
         contentView.inputLayoutSongName.editText?.onTextChange { wish.songName = it }
         contentView.inputLayoutSingerName.editText?.onTextChange { wish.singerName = it }
-        contentView.inputLayoutAlbumName.editText?.onTextChange { wish.albumName = it }
+        //contentView.inputLayoutAlbumName.editText?.onTextChange { wish.albumName = it }
         dialogBuilder.setTitle("填写你的愿望")
                 .setView(contentView)
                 .setPositiveButton("确定", null)

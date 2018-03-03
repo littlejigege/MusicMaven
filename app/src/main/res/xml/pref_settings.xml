@@ -34,27 +34,27 @@
                         android:data="https://github.com/littlejigege" />
                 </Preference>
                 <Preference
-                    android:summary="https://github.com/littlejigege"
+                    android:summary="https://github.com/weeChanc"
                     android:title="一休哥">
                     <intent
                         android:action="android.intent.action.VIEW"
-                        android:data="https://github.com/littlejigege" />
+                        android:data="https://github.com/weeChanc" />
                 </Preference>
             </PreferenceCategory>
             <PreferenceCategory android:title="后台">
                 <Preference
-                    android:summary="https://github.com/littlejigege"
+                    android:summary="https://github.com/WilderGao"
                     android:title="高简称">
                     <intent
                         android:action="android.intent.action.VIEW"
-                        android:data="https://github.com/littlejigege" />
+                        android:data="https://github.com/WilderGao" />
                 </Preference>
             </PreferenceCategory>
         </PreferenceScreen>
 
 
         <Preference
-            android:summary="支付宝：13143392307"
+            android:summary="支付宝：13715851751"
             android:title="赞赏" />
     </PreferenceCategory>
 </PreferenceScreen>

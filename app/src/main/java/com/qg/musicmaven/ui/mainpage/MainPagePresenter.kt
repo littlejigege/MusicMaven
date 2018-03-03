@@ -9,9 +9,7 @@ import com.qg.musicmaven.ui.mainpage.MainPageContract
 class MainPagePresenter : AbsBasePresenter<MainPageContract.View>() {
 
 
-    fun onKugouClick() {
-        view?.openKugouPage()
-    }
+
 
     fun onCloudClick() {
         view?.openCloudPage()
@@ -23,5 +21,9 @@ class MainPagePresenter : AbsBasePresenter<MainPageContract.View>() {
 
     fun onSettingClick() {
         view?.openSettingPage()
+    }
+
+    fun requestNotice(){
+        view?.onNoticeGet("还能说什么？66666666666666666666666666666666666666666666666")
     }
 }

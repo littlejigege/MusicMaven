@@ -1,11 +1,8 @@
 package com.qg.musicmaven
 
 import android.app.Application
-import android.content.Context
 import android.media.MediaPlayer
 import android.support.v4.media.session.MediaControllerCompat
-import android.widget.MediaController
-import com.google.gson.GsonBuilder
 import com.iflytek.cloud.SpeechConstant
 import com.iflytek.cloud.SpeechUtility
 import com.mobile.utils.*
@@ -13,7 +10,7 @@ import com.mobile.utils.*
 import java.io.File
 import kotlin.properties.Delegates
 
-import com.qg.musicmaven.download.DownloadUtil
+import com.qg.musicmaven.download.ApkDownloadUtil
 import com.qg.musicmaven.modle.bean.User
 import com.qg.musicmaven.netWork.CacheInterceptor
 import com.qg.musicmaven.netWork.KuGouApi
@@ -24,16 +21,9 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import com.scwang.smartrefresh.layout.footer.ClassicsFooter
-import com.scwang.smartrefresh.layout.api.RefreshLayout
-import com.scwang.smartrefresh.layout.api.RefreshFooter
-import com.scwang.smartrefresh.layout.api.DefaultRefreshFooterCreater
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
 import com.scwang.smartrefresh.layout.footer.BallPulseFooter
-import com.scwang.smartrefresh.layout.footer.FalsifyFooter
 import okhttp3.Cache
-import okhttp3.Interceptor
-import kotlin.concurrent.thread
 
 
 /**
@@ -72,7 +62,6 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        DownloadUtil.init(this)
         Utils.init(this)
         buildRetrofit()
         setFooter()
@@ -123,23 +112,17 @@ class App : Application() {
         }
     }
 
-    fun playAudio(url: String,songName:String,singer:String,imageUrl:String) {
+    fun playAudio(url: String, songName: String, singer: String, imageUrl: String) {
+        MyMusicService.url = url
+        MyMusicService.songName = songName
+        MyMusicService.singer = singer
+        MyMusicService.imageUrl = imageUrl
         musicController?.transportControls?.play()
-        thread {
-            try {
-                player.reset()
-                player.setDataSource(url)
-                player.prepare()
-                player.start()
-            } catch (e: Exception) {
-                showToast("播放地址无效")
-            }
-        }
     }
 
     fun stopAudio() {
         musicController?.transportControls?.stop()
-        player.stop()
+
     }
 
     fun hasUser() = getUser() != null

@@ -33,5 +33,5 @@
     <color name="radiusImageView_border_color">@color/app_color_theme_2</color>
     <color name="radiusImageView_selected_border_color">@color/app_color_theme_1</color>
     <color name="radiusImageView_selected_mask_color">#7FEF5362</color>
-
+    <color name="notification_bg">#e91e63</color>
 </resources>

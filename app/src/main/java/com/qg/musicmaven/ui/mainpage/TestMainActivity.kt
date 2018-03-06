@@ -15,14 +15,18 @@ import com.qg.musicmaven.MyMusicService
 import com.qg.musicmaven.R
 import com.qg.musicmaven.base.BaseActivity
 import com.qg.musicmaven.cloudpage.CloudFragment
+import com.qg.musicmaven.download.ApkDownloadUtil
 import com.qg.musicmaven.dreampage.DreamFragment
 
 import com.qg.musicmaven.mainpage.MainPagePresenter
+import com.qg.musicmaven.modle.bean.UpdateInfo
 
 import com.qg.musicmaven.settingpage.SettingFragment
 import com.qg.musicmaven.ui.searchpage.SearchActivity
 import com.qg.musicmaven.widget.UploadDialog
 import kotlinx.android.synthetic.main.activity_test_main.*
+import me.drakeet.materialdialog.MaterialDialog
+import org.jetbrains.anko.downloadManager
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.startService
 
@@ -86,6 +90,8 @@ class TestMainActivity : BaseActivity(), MainPageContract.View {
         presenter.onCloudClick()
         //请求公告
         presenter.requestNotice()
+        //检查更新
+        presenter.checkForUpdate()
         startService(Intent(this, MyMusicService::class.java))
     }
 
@@ -141,5 +147,22 @@ class TestMainActivity : BaseActivity(), MainPageContract.View {
 
     override fun onNoticeGet(notice: String?) {
         runTextView.text = notice
+    }
+
+    override fun onUpdateGet(info: UpdateInfo?) {
+        info?.let {
+            val dialog = MaterialDialog(this)
+            dialog.setTitle("版本更新")
+                    .setMessage(it.statement)
+                    .setPositiveButton("下载安装", {
+                        dialog.dismiss()
+                        //下载
+                        ApkDownloadUtil(downloadManager).downloadApk(info.versionUrl)
+                    })
+                    .setNegativeButton("不了", {
+                        dialog.dismiss()
+                    })
+                    .show()
+        }
     }
 }

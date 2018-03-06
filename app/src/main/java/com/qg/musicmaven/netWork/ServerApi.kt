@@ -13,6 +13,9 @@ import retrofit2.http.*
  * Created by jimji on 2017/9/14.
  */
 interface ServerApi {
+    @GET("${App.SERVER_ADDRESS}/update/notice")
+    fun getNotice(): Observable<FeedBack<Notice>>
+
     @POST("${App.SERVER_ADDRESS}/user/login")
     fun login(@Body body: RequestBody): Observable<FeedBack<User>>
 
@@ -34,7 +37,7 @@ interface ServerApi {
     fun getCode(@Query("userEmail") email: String): Observable<Any>
 
     @GET("${App.SERVER_ADDRESS}/update/version")
-    fun checkApk(@Query("versionCode") versionCode: Int = BuildConfig.VERSION_CODE): Observable<FeedBack<String>>
+    fun checkApk(@Query("versionCode") versionCode: Int = BuildConfig.VERSION_CODE): Observable<FeedBack<UpdateInfo>>
 
     @GET("${App.SERVER_ADDRESS}/song/servermusic")
     fun getSinger(@Query("pageNum") page: Int = 1, @Query("pageSize") count: Int = 10): Observable<FeedBack<MutableList<Singer>>>
